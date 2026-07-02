@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { Wrap } from "@/components/ui/Wrap";
-import { getDonateUrl } from "@/lib/donation";
+import { getGeneralDonateUrl } from "@/lib/donation";
 import type { DonationConfig } from "@/lib/donation";
 
 export function ProgramDonateCta({
@@ -11,10 +11,16 @@ export function ProgramDonateCta({
 }: {
   title: string;
   sponsorable?: boolean | null;
-  sponsorUrl: string;
+  sponsorUrl?: string | null;
   donation?: DonationConfig | null;
 }) {
-  const donateUrl = sponsorable !== false ? sponsorUrl : getDonateUrl(donation);
+  const donateUrl =
+    sponsorable !== false ? sponsorUrl : getGeneralDonateUrl(donation);
+
+  if (!donateUrl) {
+    return null;
+  }
+
   const ctaLabel = sponsorable !== false ? "Sponsor" : "Donate";
 
   return (

@@ -1,19 +1,23 @@
 import type { HomePageData, SiteSettingsData } from "@/lib/fallbacks/home";
-import type { DonationConfig } from "@/lib/donation";
-import { getDonateUrl, getTierDonateUrl } from "@/lib/donation";
+import type { DonationConfig, SponsorshipTierKey } from "@/lib/donation";
+import {
+  getDonateHubPath,
+  getGeneralDonateUrl,
+  getTierDonateUrl,
+} from "@/lib/donation";
 
 export function resolveDonationUrl(
   url: string | null | undefined,
   donation: DonationConfig | null | undefined,
-  tier?: "eye" | "child" | "village",
+  tier?: SponsorshipTierKey,
 ): string {
   if (url) {
     return url;
   }
   if (tier) {
-    return getTierDonateUrl(tier, donation);
+    return getTierDonateUrl(tier, donation) ?? getGeneralDonateUrl(donation) ?? getDonateHubPath();
   }
-  return getDonateUrl(donation);
+  return getGeneralDonateUrl(donation) ?? getDonateHubPath();
 }
 
 export function resolveHomePageData(

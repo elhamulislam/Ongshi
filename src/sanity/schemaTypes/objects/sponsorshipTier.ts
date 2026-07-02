@@ -14,6 +14,7 @@ export const sponsorshipTier = defineType({
           { title: "Eye", value: "eye" },
           { title: "Child", value: "child" },
           { title: "Village", value: "village" },
+          { title: "Cervical cancer", value: "cervical-cancer" },
         ],
       },
       validation: (rule) => rule.required(),
@@ -40,12 +41,7 @@ export const sponsorshipTier = defineType({
       name: "url",
       title: "Donation URL",
       type: "url",
-    }),
-    defineField({
-      name: "embed",
-      title: "Embed code",
-      type: "text",
-      rows: 4,
+      description: "Zeffy link for this sponsorship tier",
     }),
   ],
 });

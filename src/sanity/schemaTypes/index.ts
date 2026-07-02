@@ -1,6 +1,7 @@
 import type { SchemaTypeDefinition } from "sanity";
 
 import { campaign } from "./campaign";
+import { donatePage } from "./donatePage";
 import { homePage } from "./homePage";
 import { impactStat } from "./impactStat";
 import { blockContent } from "./objects/blockContent";
@@ -42,6 +43,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     teamMember,
     siteSettings,
     homePage,
+    donatePage,
     page,
   ],
 };

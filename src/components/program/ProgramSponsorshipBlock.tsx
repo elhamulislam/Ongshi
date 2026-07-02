@@ -9,9 +9,9 @@ export function ProgramSponsorshipBlock({
 }: {
   suggestedGift?: string | null;
   whatGiftFunds?: string | null;
-  sponsorUrl: string;
+  sponsorUrl?: string | null;
 }) {
-  if (!whatGiftFunds) {
+  if (!whatGiftFunds || !sponsorUrl) {
     return null;
   }
 

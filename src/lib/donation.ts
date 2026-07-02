@@ -1,65 +1,96 @@
+export type SponsorshipTierKey = "eye" | "child" | "village" | "cervical-cancer";
+
+export const DONATE_HUB_PATH = "/donate";
+
+export const TIER_ORDER: SponsorshipTierKey[] = [
+  "eye",
+  "cervical-cancer",
+  "village",
+  "child",
+];
+
 export type DonationConfig = {
-  platform?: "givebutter" | "zeffy" | "other" | null;
-  mode?: "embed" | "link" | null;
+  platform?: "zeffy" | null;
   primaryUrl?: string | null;
-  primaryEmbed?: string | null;
   sponsorshipTiers?: Array<{
-    key?: "eye" | "child" | "village" | null;
+    key?: SponsorshipTierKey | null;
     label?: string | null;
     amount?: string | null;
     whatItFunds?: string | null;
     url?: string | null;
-    embed?: string | null;
   }> | null;
 };
 
-/** Primary donate destination — never hardcode platform URLs in components. */
-export function getDonateUrl(donation?: DonationConfig | null): string {
-  if (donation?.primaryUrl) {
-    return donation.primaryUrl;
-  }
-  return "/donate";
+export type SponsorshipTier = NonNullable<DonationConfig["sponsorshipTiers"]>[number];
+
+const PROGRAM_TIER_KEYS: Record<string, SponsorshipTierKey> = {
+  "sponsor-an-eye": "eye",
+  "sponsor-a-village": "village",
+  "sponsor-a-child": "child",
+  "cervical-cancer-elimination": "cervical-cancer",
+};
+
+/** Site-wide Donate nav — always the donate hub, never a Zeffy URL. */
+export function getDonateHubPath(): string {
+  return DONATE_HUB_PATH;
+}
+
+/** Base / general Zeffy campaign from site settings. */
+export function getGeneralDonateUrl(donation?: DonationConfig | null): string | null {
+  return donation?.primaryUrl ?? null;
+}
+
+export function getOrderedSponsorshipTiers(
+  donation?: DonationConfig | null,
+): SponsorshipTier[] {
+  const tiers = donation?.sponsorshipTiers ?? [];
+  return TIER_ORDER.map((key) => tiers.find((tier) => tier.key === key)).filter(
+    (tier): tier is SponsorshipTier => Boolean(tier?.url),
+  );
+}
+
+export function getTierDonateUrl(
+  tierKey: SponsorshipTierKey,
+  donation?: DonationConfig | null,
+): string | null {
+  const tier = donation?.sponsorshipTiers?.find((t) => t.key === tierKey);
+  return tier?.url ?? null;
 }
 
 export function getProgramDonateUrl(
   programOverride: string | null | undefined,
   donation?: DonationConfig | null,
-): string {
+): string | null {
   if (programOverride) {
     return programOverride;
   }
-  return getDonateUrl(donation);
+  return getGeneralDonateUrl(donation);
 }
 
-export function getTierDonateUrl(
-  tierKey: "eye" | "child" | "village",
-  donation?: DonationConfig | null,
-): string {
-  const tier = donation?.sponsorshipTiers?.find((t) => t.key === tierKey);
-  if (tier?.url) {
-    return tier.url;
-  }
-  return getDonateUrl(donation);
-}
-
-const PROGRAM_TIER_KEYS: Record<string, "eye" | "child" | "village"> = {
-  "sponsor-an-eye": "eye",
-  "sponsor-a-village": "village",
-  "sponsor-a-child": "child",
-};
-
-/** Sponsor/Donate URL for a program — respects override, then tier, then global config. */
+/** Sponsor/Donate URL for a program — override, then cause tier, then general campaign. */
 export function getProgramSponsorUrl(
   slug: string,
   programOverride?: string | null,
   donation?: DonationConfig | null,
-): string {
+): string | null {
   if (programOverride) {
     return programOverride;
   }
-  const tier = PROGRAM_TIER_KEYS[slug];
-  if (tier) {
-    return getTierDonateUrl(tier, donation);
+  const tierKey = PROGRAM_TIER_KEYS[slug];
+  if (tierKey) {
+    const tierUrl = getTierDonateUrl(tierKey, donation);
+    if (tierUrl) {
+      return tierUrl;
+    }
   }
-  return getDonateUrl(donation);
+  return getGeneralDonateUrl(donation);
+}
+
+/** @deprecated Use getDonateHubPath() for navigation or getGeneralDonateUrl() for the base Zeffy link. */
+export function getDonateUrl(donation?: DonationConfig | null): string {
+  return getDonateHubPath();
+}
+
+export function hasDonateHubContent(donation?: DonationConfig | null): boolean {
+  return Boolean(getGeneralDonateUrl(donation) || getOrderedSponsorshipTiers(donation).length);
 }

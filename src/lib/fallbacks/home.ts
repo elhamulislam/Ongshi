@@ -30,11 +30,16 @@ export const fallbackSiteSettings: SiteSettingsData = {
   nonprofitLine:
     "Ongshi is a registered 501(c)(3) nonprofit. Donations are tax-deductible.",
   donation: {
-    platform: "givebutter",
-    mode: "link",
+    platform: "zeffy",
     primaryUrl: null,
     sponsorshipTiers: [
       { key: "eye", label: "Sponsor an Eye", amount: null, url: null },
+      {
+        key: "cervical-cancer",
+        label: "Cervical Cancer Elimination",
+        amount: null,
+        url: null,
+      },
       { key: "child", label: "Sponsor a Child", amount: "$30 / month", url: null },
       { key: "village", label: "Sponsor a Village", amount: null, url: null },
     ],

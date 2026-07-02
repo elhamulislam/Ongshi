@@ -3,7 +3,7 @@ import { VisualEditing } from "next-sanity/visual-editing";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { getDonateUrl } from "@/lib/donation";
+import { getDonateHubPath } from "@/lib/donation";
 import { getSiteSettings } from "@/lib/sanity/loaders";
 import { SanityLive } from "@/sanity/lib/live";
 
@@ -13,7 +13,7 @@ export default async function SiteLayout({
   children: React.ReactNode;
 }>) {
   const settings = await getSiteSettings();
-  const donateUrl = getDonateUrl(settings.donation);
+  const donateUrl = getDonateHubPath();
   const { isEnabled: isDraftMode } = await draftMode();
 
   return (

@@ -5,18 +5,13 @@ import { TextLink } from "@/components/ui/TextLink";
 import { Wrap } from "@/components/ui/Wrap";
 import type { HomeProgram } from "@/lib/fallbacks/home";
 import type { DonationConfig } from "@/lib/donation";
-import { getProgramDonateUrl, getTierDonateUrl } from "@/lib/donation";
+import { getProgramSponsorUrl } from "@/lib/donation";
 
 const programLinkLabels: Record<string, string> = {
   "sponsor-an-eye": "Sponsor an eye",
   "sponsor-a-village": "Sponsor a village",
   "sponsor-a-child": "Sponsor a child",
-};
-
-const programTierKeys: Record<string, "eye" | "child" | "village"> = {
-  "sponsor-an-eye": "eye",
-  "sponsor-a-village": "village",
-  "sponsor-a-child": "child",
+  "cervical-cancer-elimination": "Support cervical cancer elimination",
 };
 
 export function FeaturedPrograms({
@@ -39,14 +34,17 @@ export function FeaturedPrograms({
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {programs.map((program) => {
             const isAccent = program.slug === "sponsor-a-child";
-            const tier = programTierKeys[program.slug];
-            const donateUrl = program.donateUrlOverride
-              ? program.donateUrlOverride
-              : tier
-                ? getTierDonateUrl(tier, donation)
-                : getProgramDonateUrl(program.donateUrlOverride, donation);
+            const donateUrl = getProgramSponsorUrl(
+              program.slug,
+              program.donateUrlOverride,
+              donation,
+            );
             const linkLabel =
               programLinkLabels[program.slug] ?? `Sponsor ${program.title.toLowerCase()}`;
+
+            if (!donateUrl) {
+              return null;
+            }
 
             if (isAccent && program.suggestedGift) {
               return (

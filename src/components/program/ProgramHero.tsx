@@ -20,7 +20,7 @@ export function ProgramHero({
   summary: string;
   heroImageUrl: string;
   heroImageAlt: string;
-  sponsorUrl: string;
+  sponsorUrl?: string | null;
   sponsorable?: boolean | null;
   suggestedGift?: string | null;
 }) {
@@ -36,7 +36,7 @@ export function ProgramHero({
               {title}
             </h1>
             <p className="mt-5 max-w-[42ch] text-[1.12rem] text-muted">{summary}</p>
-            {sponsorable !== false ? (
+            {sponsorable !== false && sponsorUrl ? (
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <Button href={sponsorUrl}>
                   {suggestedGift ? `Sponsor — ${suggestedGift}` : "Sponsor"}

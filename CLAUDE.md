@@ -29,7 +29,7 @@ Priorities, in order (they drive every design and layout call):
 Collections: `program`, `campaign` (time-bound, incl. youth-led), `story`, `impactStat`, `partner`, `teamMember` (optional).
 Singletons: `siteSettings`, `homePage`, `page` (About, Get Involved).
 
-Donation is a config object on `siteSettings` (`platform` = Givebutter by default, swappable to Zeffy). **Never hardcode donation links.** Always read from `siteSettings.donation` (and `program.donateUrlOverride` when set). This is what keeps the platform swap a one-field change.
+Donation is a Zeffy config object on `siteSettings` (`donation`): a general campaign URL (`primaryUrl`) plus cause-tier URLs (`sponsorshipTiers` for eye, child, village, cervical-cancer). **Never hardcode donation links.** Header Donate goes to `/donate`; program Sponsor buttons link to the matching cause URL (or `program.donateUrlOverride`).
 
 ## Routes
 `/` · `/our-work` · `/our-work/[slug]` · `/donate` · `/ongshi-youth` · `/get-involved` · `/about` · `/events` · `/events/[slug]` · `/stories` · `/stories/[slug]` · `/studio`
@@ -37,7 +37,7 @@ Donation is a config object on `siteSettings` (`platform` = Givebutter by defaul
 ## Page blueprints (summary — full in the spec doc)
 - **Home:** header (+Donate) · hero (rotating photo carousel with a synced impact-stat card) · impact snapshot · featured sponsorships (Eye/Child/Village) · "$30/month" sponsorship hook · latest stories · get-involved strip · partners · newsletter · footer. The hero matches `design/ongshi-homepage-reference.html`.
 - **Program template** (one layout for every program): hero (+Sponsor) · the need · what we do · impact (stats + photos) · sponsorship block (what your gift funds) · related stories · gallery · closing Donate CTA.
-- **Donate hub:** why give · the donation form (Givebutter/Zeffy embed from `siteSettings`) with one-time/monthly toggle · the three sponsorship tiers · "where your money goes."
+- **Donate hub:** why give · general Zeffy donate action · four cause sponsorship cards · "where your money goes."
 
 ## Design system — build to this, do not improvise
 The look is defined. **Match `design/ongshi-homepage-reference.html` on every page.** It is built from the real brand. Left to defaults, AI UI clusters into a few generic looks — avoid all of them.

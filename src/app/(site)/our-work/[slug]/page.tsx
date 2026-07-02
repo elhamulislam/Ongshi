@@ -59,7 +59,7 @@ export default async function ProgramPage({ params }: PageProps) {
       />
       <ProgramTextSections theNeed={program.theNeed} whatWeDo={program.whatWeDo} />
       <ProgramImpact stats={program.impactStats} gallery={program.gallery} />
-      {program.sponsorable !== false && program.whatGiftFunds ? (
+      {program.sponsorable !== false && program.whatGiftFunds && sponsorUrl ? (
         <ProgramSponsorshipBlock
           suggestedGift={program.suggestedGift}
           whatGiftFunds={program.whatGiftFunds}

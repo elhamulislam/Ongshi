@@ -1,11 +1,16 @@
 import { isSanityConfigured } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/live";
+import { DONATE_PAGE_QUERY } from "@/sanity/queries/donatePage";
 import { HOME_PAGE_QUERY, HOME_PARTNERS_QUERY } from "@/sanity/queries/homePage";
 import {
   PROGRAM_BY_SLUG_QUERY,
   PROGRAMS_INDEX_QUERY,
 } from "@/sanity/queries/program";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
+import {
+  fallbackDonatePage,
+  type DonatePageData,
+} from "@/lib/fallbacks/donate";
 import {
   fallbackHomePage,
   fallbackPartners,
@@ -20,7 +25,7 @@ import {
   type ProgramCard,
   type ProgramData,
 } from "@/lib/fallbacks/program";
-import { getDonateUrl } from "@/lib/donation";
+import { getGeneralDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
 
 type HomePageQueryResult = {
@@ -66,7 +71,7 @@ function mapHomePageQuery(
     return null;
   }
 
-  const donateUrl = getDonateUrl(donation);
+  const donateUrl = getGeneralDonateUrl(donation);
 
   return resolveHomePageData(
     {
@@ -195,6 +200,50 @@ export async function getProgramBySlug(slug: string): Promise<ProgramData | null
   } catch {
     return null;
   }
+}
+
+type DonatePageQueryResult = {
+  headline?: string | null;
+  whyGive?: string | null;
+  whereYourMoneyGoes?: string | null;
+  featuredStats?: DonatePageData["featuredStats"] | null;
+  seo?: DonatePageData["seo"];
+};
+
+function mapDonatePageQuery(page: DonatePageQueryResult | null): DonatePageData | null {
+  if (!page?.headline || !page?.whyGive) {
+    return null;
+  }
+
+  return {
+    headline: page.headline,
+    whyGive: page.whyGive,
+    whereYourMoneyGoes: page.whereYourMoneyGoes,
+    featuredStats: page.featuredStats ?? [],
+    seo: page.seo,
+  };
+}
+
+export async function getDonatePageData(): Promise<DonatePageData> {
+  if (!isSanityConfigured) {
+    return fallbackDonatePage;
+  }
+
+  try {
+    const { data } = await sanityFetch({
+      query: DONATE_PAGE_QUERY,
+      perspective: "published",
+      stega: false,
+    });
+    const mapped = mapDonatePageQuery(data as DonatePageQueryResult | null);
+    if (mapped) {
+      return mapped;
+    }
+  } catch {
+    // fall through when CMS is empty or unreachable
+  }
+
+  return fallbackDonatePage;
 }
 
 export async function getProgramsIndex(): Promise<ProgramCard[]> {

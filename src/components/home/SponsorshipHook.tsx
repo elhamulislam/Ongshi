@@ -3,7 +3,7 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Wrap } from "@/components/ui/Wrap";
 import type { HomePageData } from "@/lib/fallbacks/home";
 import type { DonationConfig } from "@/lib/donation";
-import { getDonateUrl, getTierDonateUrl } from "@/lib/donation";
+import { getGeneralDonateUrl, getTierDonateUrl } from "@/lib/donation";
 
 export function SponsorshipHook({
   hook,
@@ -12,7 +12,12 @@ export function SponsorshipHook({
   hook: HomePageData["sponsorshipHook"];
   donation?: DonationConfig | null;
 }) {
-  const sponsorUrl = getTierDonateUrl("child", donation) || getDonateUrl(donation);
+  const sponsorUrl =
+    getTierDonateUrl("child", donation) ?? getGeneralDonateUrl(donation);
+
+  if (!sponsorUrl) {
+    return null;
+  }
 
   return (
     <section

@@ -87,7 +87,7 @@ Cross-cutting: a **Stories / Updates** feed the team posts to; entries surface o
 
 **Program template** (one layout, every program): hero with Sponsor button → the need → what we do → impact (stats + photos) → sponsorship block (suggested gift + what it funds) → related stories → gallery → closing Donate CTA.
 
-**Donate hub** (`/donate`): headline and why give → the donation form (Givebutter or Zeffy embed, pulled from Site Settings) with a one-time/monthly toggle → the three sponsorship tiers with "what it funds" → a short "where your money goes" reassurance.
+**Donate hub** (`/donate`): headline and why give → general Zeffy donate action (`primaryUrl`) → four cause sponsorship cards (eye, cervical-cancer, village, child tier URLs) → a short "where your money goes" reassurance.
 
 The rest are lighter:
 - **Our Work index** — intro plus the programs under their three pillars, each a card.
@@ -175,11 +175,10 @@ Shared pieces: an `seo` object (`metaTitle`, `metaDescription`, `ogImage`) reuse
 - `social` object: facebook / instagram / x / youtube / linkedin (urls)
 - `newsletter` object: `provider`, `signupUrl` or `embedCode`
 - `nonprofitLine` string (the 501(c)3 footer line)
-- `donation` object — the swap-friendly config:
-  - `platform` string: Givebutter / Zeffy / Other · default Givebutter
-  - `mode` string: Embed / Link
-  - `primaryUrl` url · `primaryEmbed` text (used when mode = Embed)
-  - `sponsorshipTiers` array of object: `key` (eye/child/village), `label`, `amount`, `whatItFunds` (text), `url`, `embed` (optional)
+- `donation` object — Zeffy link config (editable in Studio, never hardcoded in components):
+  - `platform` string: Zeffy · default Zeffy (read-only)
+  - `primaryUrl` url (general / base Zeffy campaign)
+  - `sponsorshipTiers` array of object: `key` (eye / cervical-cancer / village / child), `label`, `amount`, `whatItFunds` (text), `url`
 
 **homePage**
 - `heroSlides` array of object: `image` (+alt), `statValue`, `statLabel` (the rotating hero carousel)
@@ -196,7 +195,7 @@ Shared pieces: an `seo` object (`metaTitle`, `metaDescription`, `ogImage`) reuse
 - `body` Portable Text · required · `cta` object { label, url } · optional · `seo` object
 - The About route also pulls Team members, Partners, and Impact stats from their collections into dedicated sections, so those are managed in one place rather than re-typed.
 
-**Donation flexibility:** switching Givebutter → Zeffy means editing `platform`, `mode`, and the URLs/embeds in the `donation` object — no code, and you can run a mix during a transition. Givebutter is the chosen default; Zeffy is already set up and stakeholders may prefer the familiar tool, so the site is built to swap freely.
+**Donation config:** the header Donate button links to `/donate`. The donate hub uses `primaryUrl` for the general campaign and tier URLs for cause cards. Program Sponsor buttons link directly to the matching cause URL (or `program.donateUrlOverride`). All URLs live in `siteSettings.donation`.
 
 ---
 

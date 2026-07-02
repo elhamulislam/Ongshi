@@ -99,7 +99,11 @@ async function uploadImage(relativePath, alt) {
   };
 }
 
-const GIVEBUTTER_URL = "https://givebutter.com/ongshi";
+const ZEFFY_GENERAL = "https://www.zeffy.com/en-US/donation-form/ongshi-general";
+const ZEFFY_EYE = "https://www.zeffy.com/en-US/donation-form/ongshi-sponsor-an-eye";
+const ZEFFY_CHILD = "https://www.zeffy.com/en-US/donation-form/ongshi-sponsor-a-child";
+const ZEFFY_VILLAGE = "https://www.zeffy.com/en-US/donation-form/ongshi-sponsor-a-village";
+const ZEFFY_CERVICAL = "https://www.zeffy.com/en-US/donation-form/ongshi-cervical-cancer";
 
 async function seed() {
   console.log("Uploading images…");
@@ -381,30 +385,44 @@ async function seed() {
     nonprofitLine:
       "Ongshi is a registered 501(c)(3) nonprofit. Donations are tax-deductible.",
     donation: {
-      platform: "givebutter",
-      mode: "link",
-      primaryUrl: GIVEBUTTER_URL,
+      platform: "zeffy",
+      primaryUrl: ZEFFY_GENERAL,
       sponsorshipTiers: [
         {
           _key: key(),
           key: "eye",
           label: "Sponsor an Eye",
           amount: null,
-          url: GIVEBUTTER_URL,
+          whatItFunds:
+            "Funds screening, cataract surgery, post-operative care, and glasses when needed.",
+          url: ZEFFY_EYE,
         },
         {
           _key: key(),
-          key: "child",
-          label: "Sponsor a Child",
-          amount: "$30 / month",
-          url: GIVEBUTTER_URL,
+          key: "cervical-cancer",
+          label: "Cervical Cancer Elimination",
+          amount: null,
+          whatItFunds:
+            "Supports screening, treatment, and education to eliminate cervical cancer in the communities we serve.",
+          url: ZEFFY_CERVICAL,
         },
         {
           _key: key(),
           key: "village",
           label: "Sponsor a Village",
           amount: null,
-          url: GIVEBUTTER_URL,
+          whatItFunds:
+            "Helps purchase materials, hire local labor, and rebuild homes after flooding.",
+          url: ZEFFY_VILLAGE,
+        },
+        {
+          _key: key(),
+          key: "child",
+          label: "Sponsor a Child",
+          amount: "$30 / month",
+          whatItFunds:
+            "Monthly support covers food, clothing, school fees, and supplies for a sponsored child.",
+          url: ZEFFY_CHILD,
         },
       ],
     },
@@ -465,6 +483,23 @@ async function seed() {
   };
 
   await seedPublishedAndDraft(homePage);
+
+  console.log("Creating donate page…");
+
+  const donatePage = {
+    _id: "donatePage",
+    _type: "donatePage",
+    headline: "Your share changes a life",
+    whyGive:
+      "Every gift to Ongshi goes directly to the work — restoring sight, rebuilding homes, and sponsoring children across Bangladesh and Austin, Texas. You choose how to give; we make sure it reaches the people who need it.",
+    whereYourMoneyGoes:
+      "Ongshi is volunteer-led. Your donation funds programs on the ground — not overhead.",
+    featuredStats: impactStats
+      .filter((s) => s.showOnHome)
+      .map((s) => ({ _type: "reference", _ref: s._id })),
+  };
+
+  await seedPublishedAndDraft(donatePage);
 
   console.log("Done. homePage and siteSettings have matching published + draft documents.");
 }
