@@ -27,7 +27,7 @@ export function ProgramHero({
   const pillarLabel = PILLAR_LABELS[pillar] ?? pillar;
 
   return (
-    <section className="py-10 md:py-20">
+    <section className="border-b border-line pt-10 pb-12 md:pt-20 md:pb-16">
       <Wrap>
         <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-[clamp(2rem,5vw,4.5rem)]">
           <div className="order-2 lg:order-1">

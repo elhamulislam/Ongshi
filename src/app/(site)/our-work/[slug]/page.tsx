@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { ProgramDonateCta } from "@/components/program/ProgramDonateCta";
 import { ProgramHero } from "@/components/program/ProgramHero";
+import { ProgramImpact } from "@/components/program/ProgramImpact";
+import { ProgramRelatedStories } from "@/components/program/ProgramRelatedStories";
+import { ProgramSponsorshipBlock } from "@/components/program/ProgramSponsorshipBlock";
+import { ProgramTextSections } from "@/components/program/ProgramTextSections";
 import { getProgramSponsorUrl } from "@/lib/donation";
 import { getProgramBySlug, getSiteSettings } from "@/lib/sanity/loaders";
 
@@ -51,6 +56,22 @@ export default async function ProgramPage({ params }: PageProps) {
         sponsorUrl={sponsorUrl}
         sponsorable={program.sponsorable}
         suggestedGift={program.suggestedGift}
+      />
+      <ProgramTextSections theNeed={program.theNeed} whatWeDo={program.whatWeDo} />
+      <ProgramImpact stats={program.impactStats} gallery={program.gallery} />
+      {program.sponsorable !== false && program.whatGiftFunds ? (
+        <ProgramSponsorshipBlock
+          suggestedGift={program.suggestedGift}
+          whatGiftFunds={program.whatGiftFunds}
+          sponsorUrl={sponsorUrl}
+        />
+      ) : null}
+      <ProgramRelatedStories stories={program.relatedStories} />
+      <ProgramDonateCta
+        title={program.title}
+        sponsorable={program.sponsorable}
+        sponsorUrl={sponsorUrl}
+        donation={settings.donation}
       />
     </>
   );

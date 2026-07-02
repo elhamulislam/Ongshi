@@ -191,15 +191,10 @@ export async function getProgramBySlug(slug: string): Promise<ProgramData | null
       perspective: "published",
       stega: false,
     });
-    const mapped = mapProgramData(data as ProgramData | null);
-    if (mapped) {
-      return mapped;
-    }
+    return mapProgramData(data as ProgramData | null);
   } catch {
-    // fall through to local fallback
+    return null;
   }
-
-  return getFallbackProgram(slug);
 }
 
 export async function getProgramsIndex(): Promise<ProgramCard[]> {

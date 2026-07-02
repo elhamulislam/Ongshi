@@ -64,14 +64,18 @@ function key() {
   return randomBytes(6).toString("hex");
 }
 
-function block(text) {
+function block(text, style = "normal") {
   return {
     _type: "block",
     _key: key(),
-    style: "normal",
+    style,
     markDefs: [],
     children: [{ _type: "span", _key: key(), text, marks: [] }],
   };
+}
+
+function heading(text) {
+  return block(text, "h2");
 }
 
 async function seedPublishedAndDraft(doc) {
@@ -150,6 +154,22 @@ async function seed() {
       showOnHome: true,
       order: 3,
     },
+    {
+      _id: "impactStat-screened",
+      _type: "impactStat",
+      value: "1,500+",
+      label: "patients screened at eye camps",
+      showOnHome: false,
+      order: 4,
+    },
+    {
+      _id: "impactStat-homes",
+      _type: "impactStat",
+      value: "20+",
+      label: "homes rebuilt after the floods",
+      showOnHome: false,
+      order: 5,
+    },
   ];
 
   for (const doc of impactStats) {
@@ -168,8 +188,39 @@ async function seed() {
       summary:
         "A simple cataract surgery brings a person's world back into focus. Your gift funds the operation, the camp, and the follow-up care.",
       heroImage: images.eyeCamp,
+      theNeed: [
+        heading("Sight shouldn't be a luxury"),
+        block(
+          "In rural Bangladesh, cataracts steal independence slowly — until a person can no longer work, travel, or recognize the faces of their grandchildren. Surgery exists, but the cost and distance put it out of reach for families already stretched thin.",
+        ),
+        block(
+          "Without intervention, preventable blindness deepens poverty. Parents stop earning. Grandparents lose their footing. Children take on care instead of school.",
+        ),
+      ],
+      whatWeDo: [
+        heading("We restore vision, camp by camp"),
+        block(
+          "Ongshi funds eye camps where local clinicians screen patients, perform cataract surgeries, and provide glasses and follow-up care — all in the communities where people live.",
+        ),
+        block(
+          "Volunteers coordinate logistics, donors cover the cost of each surgery, and families leave camp seeing clearly again. One gift funds the full path from screening to recovery.",
+        ),
+      ],
       sponsorable: true,
       suggestedGift: null,
+      whatGiftFunds:
+        "One gift covers screening, surgery, post-operative care, and glasses when needed.",
+      impactStats: [
+        { _type: "reference", _ref: "impactStat-surgeries", _key: key() },
+        { _type: "reference", _ref: "impactStat-screened", _key: key() },
+      ],
+      gallery: [
+        { _key: key(), ...images.eyeCamp },
+        { _key: key(), ...images.heroGlasses },
+      ],
+      relatedStories: [
+        { _type: "reference", _ref: "story-eye-camp-mymensingh", _key: key() },
+      ],
       status: "active",
       featuredOnHome: true,
       order: 1,
@@ -183,7 +234,35 @@ async function seed() {
       summary:
         "When the water takes everything, we help families rebuild their homes and their footing — board by board, roof by roof.",
       heroImage: images.rebuildRoof,
+      theNeed: [
+        heading("When the water recedes, nothing is left"),
+        block(
+          "Floods in Bangladesh can erase a family's home in a single night — walls collapsed, belongings washed away, and no savings left to start over.",
+        ),
+        block(
+          "Families sleep under tarps for months. Children miss school. Parents borrow at crushing rates just to buy a few sheets of tin.",
+        ),
+      ],
+      whatWeDo: [
+        heading("We rebuild homes, together"),
+        block(
+          "Ongshi works with local partners to purchase materials, hire skilled labor, and rebuild structurally sound homes — board by board, roof by roof.",
+        ),
+        block(
+          "Village sponsorship pools gifts so entire communities can recover faster. Families move back in with dignity, and children return to school.",
+        ),
+      ],
       sponsorable: true,
+      whatGiftFunds:
+        "Your sponsorship helps purchase materials, hire local labor, and restore a family's home.",
+      impactStats: [{ _type: "reference", _ref: "impactStat-homes", _key: key() }],
+      gallery: [
+        { _key: key(), ...images.rebuildRoof },
+        { _key: key(), ...images.rebuild },
+      ],
+      relatedStories: [
+        { _type: "reference", _ref: "story-rebuilding-homes", _key: key() },
+      ],
       status: "active",
       featuredOnHome: true,
       order: 2,
@@ -197,8 +276,33 @@ async function seed() {
       summary:
         "A monthly gift puts food on the table, clothes on their back, and a child in school — with updates on how they're growing.",
       heroImage: images.youth,
+      theNeed: [
+        heading("A child's future shouldn't depend on luck"),
+        block(
+          "In the communities we serve, a single setback — a lost job, an illness, a season of hunger — can pull a child out of school for good.",
+        ),
+        block(
+          "Without steady support, children go without meals, miss classes, and lose the chance to build a different life.",
+        ),
+      ],
+      whatWeDo: [
+        heading("We walk alongside sponsored children"),
+        block(
+          "Monthly sponsors provide food, clothing, school fees, and supplies. Local partners check in regularly and share updates on each child's progress.",
+        ),
+        block(
+          "Your gift is a long-term partnership — not a one-time handout. Sponsors see the difference their share makes, month after month.",
+        ),
+      ],
       sponsorable: true,
       suggestedGift: "$30 / month",
+      whatGiftFunds:
+        "Monthly support covers food, clothing, school fees, and supplies — with updates on your sponsored child.",
+      impactStats: [{ _type: "reference", _ref: "impactStat-child", _key: key() }],
+      gallery: [{ _key: key(), ...images.youth }],
+      relatedStories: [
+        { _type: "reference", _ref: "story-youth-shoe-drive", _key: key() },
+      ],
       status: "active",
       featuredOnHome: true,
       order: 3,
@@ -206,7 +310,7 @@ async function seed() {
   ];
 
   for (const doc of programs) {
-    await client.createOrReplace(doc);
+    await seedPublishedAndDraft(doc);
   }
 
   console.log("Creating stories…");
