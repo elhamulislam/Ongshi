@@ -4,6 +4,7 @@ import { Wrap } from "@/components/ui/Wrap";
 import { FeaturedPrograms } from "@/components/home/FeaturedPrograms";
 import { GetInvolvedStrip } from "@/components/home/GetInvolvedStrip";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
+import { HeroHeadline } from "@/components/home/HeroHeadline";
 import { ImpactStrip } from "@/components/home/ImpactStrip";
 import { LatestStories } from "@/components/home/LatestStories";
 import { NewsletterStrip } from "@/components/home/NewsletterStrip";
@@ -26,14 +27,8 @@ export default async function Home() {
         <Wrap>
           <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-[clamp(2rem,5vw,4.5rem)]">
             <div>
-              <Eyebrow>Partner in hope</Eyebrow>
-              <h1 className="mt-4 font-display text-[clamp(2.5rem,5.2vw,4rem)] font-semibold leading-[1.08] tracking-tight text-ink">
-                Your share gives sight, shelter, and a{" "}
-                <em className="font-semibold not-italic text-green-deep [font-style:italic]">
-                  future
-                </em>
-                .
-              </h1>
+              <Eyebrow>{settings.tagline ?? "Partner in hope"}</Eyebrow>
+              <HeroHeadline text={home.heroHeadline} />
               <p className="mt-5 max-w-[30ch] text-[1.18rem] text-muted lg:max-w-[30ch]">
                 {home.heroSubtext}
               </p>

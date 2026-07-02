@@ -13,6 +13,12 @@ const programLinkLabels: Record<string, string> = {
   "sponsor-a-child": "Sponsor a child",
 };
 
+const programTierKeys: Record<string, "eye" | "child" | "village"> = {
+  "sponsor-an-eye": "eye",
+  "sponsor-a-village": "village",
+  "sponsor-a-child": "child",
+};
+
 export function FeaturedPrograms({
   programs,
   donation,
@@ -33,7 +39,12 @@ export function FeaturedPrograms({
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {programs.map((program) => {
             const isAccent = program.slug === "sponsor-a-child";
-            const donateUrl = getProgramDonateUrl(program.donateUrlOverride, donation);
+            const tier = programTierKeys[program.slug];
+            const donateUrl = program.donateUrlOverride
+              ? program.donateUrlOverride
+              : tier
+                ? getTierDonateUrl(tier, donation)
+                : getProgramDonateUrl(program.donateUrlOverride, donation);
             const linkLabel =
               programLinkLabels[program.slug] ?? `Sponsor ${program.title.toLowerCase()}`;
 
@@ -52,11 +63,7 @@ export function FeaturedPrograms({
                   </span>
                   <h3 className="font-display text-[1.4rem] font-semibold">{program.title}</h3>
                   <p className="mt-2 flex-1 text-[0.98rem] opacity-92">{program.summary}</p>
-                  <TextLink
-                    href={getTierDonateUrl("child", donation) || donateUrl}
-                    light
-                    className="mt-5"
-                  >
+                  <TextLink href={donateUrl} light className="mt-5">
                     {linkLabel}
                   </TextLink>
                 </article>

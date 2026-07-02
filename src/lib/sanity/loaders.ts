@@ -11,9 +11,15 @@ import {
   type SiteSettingsData,
 } from "@/lib/fallbacks/home";
 import { getDonateUrl } from "@/lib/donation";
+import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
 
 type HomePageQueryResult = {
-  heroSlides?: HeroSlide[] | null;
+  heroSlides?: Array<{
+    statValue?: string | null;
+    statLabel?: string | null;
+    imageUrl?: string | null;
+    imageAlt?: string | null;
+  }> | null;
   heroHeadline?: string | null;
   heroSubtext?: string | null;
   heroPrimaryCta?: { label?: string | null; url?: string | null } | null;
@@ -23,6 +29,69 @@ type HomePageQueryResult = {
   featuredStats?: HomePageData["featuredStats"] | null;
   featuredStories?: HomePageData["featuredStories"] | null;
 };
+
+function mapHeroSlides(
+  slides: NonNullable<HomePageQueryResult["heroSlides"]>,
+): HeroSlide[] {
+  return slides
+    .filter((slide) => slide.imageUrl && slide.statValue && slide.statLabel)
+    .map((slide) => ({
+      imageUrl: slide.imageUrl!,
+      imageAlt: slide.imageAlt ?? "",
+      statValue: slide.statValue!,
+      statLabel: slide.statLabel!,
+    }));
+}
+
+function mapHomePageQuery(
+  page: HomePageQueryResult,
+  donation?: SiteSettingsData["donation"],
+): HomePageData | null {
+  if (!page.heroSlides?.length) {
+    return null;
+  }
+
+  const heroSlides = mapHeroSlides(page.heroSlides);
+  if (!heroSlides.length) {
+    return null;
+  }
+
+  const donateUrl = getDonateUrl(donation);
+
+  return resolveHomePageData(
+    {
+      heroSlides,
+      heroHeadline: page.heroHeadline ?? fallbackHomePage.heroHeadline,
+      heroSubtext: page.heroSubtext ?? fallbackHomePage.heroSubtext,
+      heroPrimaryCta: {
+        label: page.heroPrimaryCta?.label ?? fallbackHomePage.heroPrimaryCta.label,
+        url: page.heroPrimaryCta?.url ?? donateUrl,
+      },
+      heroSecondaryCta: {
+        label: page.heroSecondaryCta?.label ?? fallbackHomePage.heroSecondaryCta.label,
+        url: page.heroSecondaryCta?.url ?? fallbackHomePage.heroSecondaryCta.url,
+      },
+      sponsorshipHook: {
+        headline: page.sponsorshipHook?.headline ?? fallbackHomePage.sponsorshipHook.headline,
+        text: page.sponsorshipHook?.text ?? fallbackHomePage.sponsorshipHook.text,
+        ctaLabel: page.sponsorshipHook?.ctaLabel ?? fallbackHomePage.sponsorshipHook.ctaLabel,
+      },
+      featuredPrograms:
+        page.featuredPrograms && page.featuredPrograms.length > 0
+          ? page.featuredPrograms
+          : fallbackHomePage.featuredPrograms,
+      featuredStats:
+        page.featuredStats && page.featuredStats.length > 0
+          ? page.featuredStats
+          : fallbackHomePage.featuredStats,
+      featuredStories:
+        page.featuredStories && page.featuredStories.length > 0
+          ? page.featuredStories
+          : fallbackHomePage.featuredStories,
+    },
+    donation,
+  );
+}
 
 export async function getSiteSettings(): Promise<SiteSettingsData> {
   if (!isSanityConfigured) {
@@ -45,7 +114,7 @@ export async function getHomePageData(
   donation?: SiteSettingsData["donation"],
 ): Promise<HomePageData> {
   if (!isSanityConfigured) {
-    return resolveHomeCtas(fallbackHomePage, donation);
+    return resolveHomePageData(fallbackHomePage, donation);
   }
 
   try {
@@ -55,66 +124,15 @@ export async function getHomePageData(
       stega: false,
     });
 
-    const page = data as HomePageQueryResult | null;
-
-    if (!page?.heroSlides?.length) {
-      return resolveHomeCtas(fallbackHomePage, donation);
+    const mapped = mapHomePageQuery((data as HomePageQueryResult | null) ?? {}, donation);
+    if (mapped) {
+      return mapped;
     }
-
-    const donateUrl = getDonateUrl(donation);
-
-    return resolveHomeCtas(
-      {
-        heroSlides: page.heroSlides,
-        heroHeadline: page.heroHeadline ?? fallbackHomePage.heroHeadline,
-        heroSubtext: page.heroSubtext ?? fallbackHomePage.heroSubtext,
-        heroPrimaryCta: {
-          label: page.heroPrimaryCta?.label ?? fallbackHomePage.heroPrimaryCta.label,
-          url: page.heroPrimaryCta?.url ?? donateUrl,
-        },
-        heroSecondaryCta: {
-          label: page.heroSecondaryCta?.label ?? fallbackHomePage.heroSecondaryCta.label,
-          url: page.heroSecondaryCta?.url ?? fallbackHomePage.heroSecondaryCta.url,
-        },
-        sponsorshipHook: {
-          headline:
-            page.sponsorshipHook?.headline ?? fallbackHomePage.sponsorshipHook.headline,
-          text: page.sponsorshipHook?.text ?? fallbackHomePage.sponsorshipHook.text,
-          ctaLabel:
-            page.sponsorshipHook?.ctaLabel ?? fallbackHomePage.sponsorshipHook.ctaLabel,
-        },
-        featuredPrograms:
-          page.featuredPrograms && page.featuredPrograms.length > 0
-            ? page.featuredPrograms
-            : fallbackHomePage.featuredPrograms,
-        featuredStats:
-          page.featuredStats && page.featuredStats.length > 0
-            ? page.featuredStats
-            : fallbackHomePage.featuredStats,
-        featuredStories:
-          page.featuredStories && page.featuredStories.length > 0
-            ? page.featuredStories
-            : fallbackHomePage.featuredStories,
-      },
-      donation,
-    );
   } catch {
-    return resolveHomeCtas(fallbackHomePage, donation);
+    // fall through to local fallback when CMS is empty or unreachable
   }
-}
 
-function resolveHomeCtas(
-  page: HomePageData,
-  donation?: SiteSettingsData["donation"],
-): HomePageData {
-  const donateUrl = getDonateUrl(donation);
-  return {
-    ...page,
-    heroPrimaryCta: {
-      ...page.heroPrimaryCta,
-      url: page.heroPrimaryCta.url || donateUrl,
-    },
-  };
+  return resolveHomePageData(fallbackHomePage, donation);
 }
 
 export async function getPartners(): Promise<
