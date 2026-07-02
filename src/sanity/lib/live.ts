@@ -1,28 +1,19 @@
-import { createClient } from "next-sanity";
+import "server-only";
+
 import { defineLive } from "next-sanity/live";
 
-import { apiVersion, dataset, isSanityConfigured, projectId } from "../env";
+import { isSanityConfigured } from "../env";
+import { client } from "./client";
+import { token } from "./token";
 
-const token = process.env.SANITY_API_READ_TOKEN;
-
-const liveClient = isSanityConfigured
-  ? createClient({
-      projectId,
-      dataset,
-      apiVersion,
-      useCdn: false,
-      perspective: "published",
-      token,
-    })
-  : null;
-
-const live = liveClient
-  ? defineLive({
-      client: liveClient,
-      serverToken: token,
-      browserToken: token,
-    })
-  : null;
+const live =
+  isSanityConfigured && client
+    ? defineLive({
+        client,
+        serverToken: token,
+        browserToken: token,
+      })
+    : null;
 
 export const sanityFetch =
   live?.sanityFetch ??

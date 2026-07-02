@@ -74,6 +74,14 @@ function block(text) {
   };
 }
 
+async function seedPublishedAndDraft(doc) {
+  await client.createOrReplace(doc);
+  await client.createOrReplace({
+    ...doc,
+    _id: `drafts.${doc._id}`,
+  });
+}
+
 async function uploadImage(relativePath, alt) {
   const filePath = join(root, "public", relativePath);
   const buffer = readFileSync(filePath);
@@ -259,7 +267,7 @@ async function seed() {
 
   console.log("Creating site settings…");
 
-  await client.createOrReplace({
+  const siteSettings = {
     _id: "siteSettings",
     _type: "siteSettings",
     orgName: "Ongshi",
@@ -296,11 +304,13 @@ async function seed() {
         },
       ],
     },
-  });
+  };
+
+  await seedPublishedAndDraft(siteSettings);
 
   console.log("Creating home page…");
 
-  await client.createOrReplace({
+  const homePage = {
     _id: "homePage",
     _type: "homePage",
     heroSlides: [
@@ -348,9 +358,11 @@ async function seed() {
       text: "Food, clothing, and an education — and a clear line of sight to exactly where your gift goes. Cancel anytime; the difference lasts a lifetime.",
       ctaLabel: "Become a sponsor",
     },
-  });
+  };
 
-  console.log("Done. Publish documents in Studio if your dataset uses drafts.");
+  await seedPublishedAndDraft(homePage);
+
+  console.log("Done. homePage and siteSettings have matching published + draft documents.");
 }
 
 seed().catch((error) => {

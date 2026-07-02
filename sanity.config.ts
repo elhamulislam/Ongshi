@@ -2,7 +2,8 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
 
-import { apiVersion, dataset, projectId } from "./src/sanity/env";
+// Studio-only public env — no server tokens. Editing auth is via Sanity login (cookies).
+import { apiVersion, dataset, projectId } from "./src/sanity/studioEnv";
 import { schema } from "./src/sanity/schemaTypes";
 import { structure, singletonTypes } from "./src/sanity/structure";
 

@@ -1,3 +1,5 @@
+import { NextStudioLayout } from "next-sanity/studio";
+
 export { metadata, viewport } from "next-sanity/studio";
 
 export default function StudioLayout({
@@ -5,5 +7,5 @@ export default function StudioLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <NextStudioLayout>{children}</NextStudioLayout>;
 }

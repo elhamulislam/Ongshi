@@ -1,17 +1,18 @@
+import "server-only";
+
 import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, isSanityConfigured, projectId } from "../env";
+import { token } from "./token";
 
-/** Public read client for the Next.js front-end. No API token — Studio uses session auth. */
-export const client = isSanityConfigured
+/** Server-only client for authenticated reads (drafts, live preview). Not used by Studio. */
+export const serverClient = isSanityConfigured
   ? createClient({
       projectId,
       dataset,
       apiVersion,
-      useCdn: true,
+      useCdn: false,
       perspective: "published",
-      stega: {
-        studioUrl: "/studio",
-      },
+      token,
     })
   : null;
