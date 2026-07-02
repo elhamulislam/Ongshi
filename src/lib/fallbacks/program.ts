@@ -49,11 +49,40 @@ export type ProgramCard = {
   imageAlt?: string | null;
 };
 
-export const PILLAR_LABELS: Record<string, string> = {
+export const PILLAR_ORDER = ["health-care", "relief-rehab", "education"] as const;
+
+export type ProgramPillar = (typeof PILLAR_ORDER)[number];
+
+export const PILLAR_LABELS: Record<ProgramPillar, string> = {
   "health-care": "Health care",
   "relief-rehab": "Relief & rehab",
   education: "Education",
 };
+
+export const PILLAR_HEADINGS: Record<ProgramPillar, string> = {
+  "health-care": "Restoring sight and preventing preventable disease",
+  "relief-rehab": "Rebuilding lives after disaster",
+  education: "Sponsoring children for the long haul",
+};
+
+export function groupProgramsByPillar(
+  programs: ProgramCard[],
+): Array<{ pillar: ProgramPillar; programs: ProgramCard[] }> {
+  const byPillar = new Map<ProgramPillar, ProgramCard[]>(
+    PILLAR_ORDER.map((pillar) => [pillar, []]),
+  );
+
+  for (const program of programs) {
+    if (program.pillar in PILLAR_LABELS) {
+      byPillar.get(program.pillar as ProgramPillar)?.push(program);
+    }
+  }
+
+  return PILLAR_ORDER.map((pillar) => ({
+    pillar,
+    programs: byPillar.get(pillar) ?? [],
+  })).filter((group) => group.programs.length > 0);
+}
 
 export const fallbackPrograms: ProgramCard[] = [
   {
@@ -75,8 +104,8 @@ export const fallbackPrograms: ProgramCard[] = [
     summary:
       "Screening, treatment, and education to eliminate cervical cancer in the communities we serve.",
     sponsorable: true,
-    imageUrl: "/images/eye-camp.jpg",
-    imageAlt: "Health care outreach in Bangladesh",
+    imageUrl: "/images/hero-glasses.jpg",
+    imageAlt: "An Ongshi volunteer fits glasses for an elderly man at an eye camp",
   },
   {
     _id: "program-sponsor-a-village",
@@ -157,6 +186,62 @@ const fallbackProgramDetails: Record<string, Omit<ProgramData, "_id" | "slug">> 
       {
         imageUrl: "/images/hero-glasses.jpg",
         imageAlt: "An Ongshi volunteer fits glasses for an elderly man at an eye camp",
+      },
+    ],
+    relatedStories: [
+      {
+        _id: "story-eye-camp-mymensingh",
+        title: "Eye camp in Mymensingh restores sight to 156 patients",
+        slug: "eye-camp-mymensingh",
+        tags: ["health"],
+        excerpt:
+          "Over three days, volunteers screened hundreds and funded life-changing cataract surgeries.",
+        imageUrl: "/images/eye-camp.jpg",
+        imageAlt: "Eye camp",
+      },
+    ],
+  },
+  "cervical-cancer-elimination": {
+    title: "Cervical cancer elimination",
+    pillar: "health-care",
+    summary:
+      "Screening, treatment, and education to eliminate cervical cancer in the communities we serve.",
+    heroImageUrl: "/images/hero-glasses.jpg",
+    heroImageAlt: "An Ongshi volunteer fits glasses for an elderly man at an eye camp",
+    theNeed: [
+      headingBlock("Cervical cancer shouldn't be a death sentence"),
+      textBlock(
+        "In rural Bangladesh, cervical cancer is one of the leading causes of cancer death among women — yet it is largely preventable with screening and early treatment.",
+      ),
+      textBlock(
+        "Many women never receive a screening. Clinics are far away, costs are out of reach, and stigma keeps people from seeking care until it is too late.",
+      ),
+    ],
+    whatWeDo: [
+      headingBlock("We bring screening and care to the community"),
+      textBlock(
+        "Ongshi partners with local health workers to offer cervical cancer screening, connect women to treatment when needed, and teach communities about prevention.",
+      ),
+      textBlock(
+        "Your gift funds outreach visits, screening supplies, patient transport, and follow-up care — so women can get help close to home.",
+      ),
+    ],
+    sponsorable: true,
+    suggestedGift: null,
+    whatGiftFunds:
+      "Supports screening, treatment, and education to eliminate cervical cancer in the communities we serve.",
+    donateUrlOverride: null,
+    impactStats: [
+      { value: "1,500+", label: "patients screened at eye camps" },
+    ],
+    gallery: [
+      {
+        imageUrl: "/images/hero-glasses.jpg",
+        imageAlt: "An Ongshi volunteer fits glasses for an elderly man at an eye camp",
+      },
+      {
+        imageUrl: "/images/eye-camp.jpg",
+        imageAlt: "A clinician examines a patient's eyes at an Ongshi eye camp",
       },
     ],
     relatedStories: [

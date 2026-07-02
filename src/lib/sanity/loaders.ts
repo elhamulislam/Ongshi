@@ -1,5 +1,6 @@
 import { isSanityConfigured } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/live";
+import { serverClient } from "@/sanity/lib/serverClient";
 import { DONATE_PAGE_QUERY } from "@/sanity/queries/donatePage";
 import { HOME_PAGE_QUERY, HOME_PARTNERS_QUERY } from "@/sanity/queries/homePage";
 import {
@@ -7,6 +8,7 @@ import {
   PROGRAMS_INDEX_QUERY,
 } from "@/sanity/queries/program";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
+import { YOUTH_PAGE_QUERY } from "@/sanity/queries/youthPage";
 import {
   fallbackDonatePage,
   type DonatePageData,
@@ -27,6 +29,7 @@ import {
 } from "@/lib/fallbacks/program";
 import { getGeneralDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
+import type { YouthPageData } from "@/lib/sanity/youthPage";
 
 type HomePageQueryResult = {
   heroSlides?: Array<{
@@ -246,6 +249,45 @@ export async function getDonatePageData(): Promise<DonatePageData> {
   return fallbackDonatePage;
 }
 
+type YouthPageQueryResult = {
+  headline?: string | null;
+  intro?: string | null;
+  whyJoin?: string | null;
+  joinHeadline?: string | null;
+  joinText?: string | null;
+  joinFormUrl?: string | null;
+  seo?: YouthPageData["seo"];
+};
+
+function mapYouthPageQuery(page: YouthPageQueryResult | null): YouthPageData | null {
+  if (!page?.headline || !page?.intro) {
+    return null;
+  }
+
+  return {
+    headline: page.headline,
+    intro: page.intro,
+    whyJoin: page.whyJoin,
+    joinHeadline: page.joinHeadline,
+    joinText: page.joinText,
+    joinFormUrl: page.joinFormUrl,
+    seo: page.seo,
+  };
+}
+
+export async function getYouthPageData(): Promise<YouthPageData | null> {
+  if (!isSanityConfigured || !serverClient) {
+    return null;
+  }
+
+  try {
+    const data = await serverClient.fetch(YOUTH_PAGE_QUERY);
+    return mapYouthPageQuery(data as YouthPageQueryResult | null);
+  } catch {
+    return null;
+  }
+}
+
 export async function getProgramsIndex(): Promise<ProgramCard[]> {
   if (!isSanityConfigured) {
     return fallbackPrograms;
@@ -257,9 +299,16 @@ export async function getProgramsIndex(): Promise<ProgramCard[]> {
       perspective: "published",
       stega: false,
     });
-    const programs = data as ProgramCard[] | null;
-    return programs?.length ? programs : fallbackPrograms;
+    const programs = (data as ProgramCard[] | null) ?? [];
+    return programs.filter(
+      (program) =>
+        program.slug &&
+        program.title &&
+        program.summary &&
+        program.pillar &&
+        program.imageUrl,
+    );
   } catch {
-    return fallbackPrograms;
+    return [];
   }
 }

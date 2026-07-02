@@ -230,6 +230,51 @@ async function seed() {
       order: 1,
     },
     {
+      _id: "program-cervical-cancer",
+      _type: "program",
+      title: "Cervical cancer elimination",
+      slug: { _type: "slug", current: "cervical-cancer-elimination" },
+      pillar: "health-care",
+      summary:
+        "Screening, treatment, and education to eliminate cervical cancer in the communities we serve.",
+      heroImage: images.heroGlasses,
+      theNeed: [
+        heading("Cervical cancer shouldn't be a death sentence"),
+        block(
+          "In rural Bangladesh, cervical cancer is one of the leading causes of cancer death among women — yet it is largely preventable with screening and early treatment.",
+        ),
+        block(
+          "Many women never receive a screening. Clinics are far away, costs are out of reach, and stigma keeps people from seeking care until it is too late.",
+        ),
+      ],
+      whatWeDo: [
+        heading("We bring screening and care to the community"),
+        block(
+          "Ongshi partners with local health workers to offer cervical cancer screening, connect women to treatment when needed, and teach communities about prevention.",
+        ),
+        block(
+          "Your gift funds outreach visits, screening supplies, patient transport, and follow-up care — so women can get help close to home.",
+        ),
+      ],
+      sponsorable: true,
+      suggestedGift: null,
+      whatGiftFunds:
+        "Supports screening, treatment, and education to eliminate cervical cancer in the communities we serve.",
+      impactStats: [
+        { _type: "reference", _ref: "impactStat-screened", _key: key() },
+      ],
+      gallery: [
+        { _key: key(), ...images.heroGlasses },
+        { _key: key(), ...images.eyeCamp },
+      ],
+      relatedStories: [
+        { _type: "reference", _ref: "story-eye-camp-mymensingh", _key: key() },
+      ],
+      status: "active",
+      featuredOnHome: true,
+      order: 2,
+    },
+    {
       _id: "program-sponsor-a-village",
       _type: "program",
       title: "Rebuild after the flood",
@@ -269,7 +314,7 @@ async function seed() {
       ],
       status: "active",
       featuredOnHome: true,
-      order: 2,
+      order: 3,
     },
     {
       _id: "program-sponsor-a-child",
@@ -309,7 +354,7 @@ async function seed() {
       ],
       status: "active",
       featuredOnHome: true,
-      order: 3,
+      order: 4,
     },
   ];
 
@@ -500,6 +545,24 @@ async function seed() {
   };
 
   await seedPublishedAndDraft(donatePage);
+
+  console.log("Creating Ongshi Youth page…");
+
+  const youthPage = {
+    _id: "youthPage",
+    _type: "youthPage",
+    headline: "Students leading real change",
+    intro:
+      "Ongshi Youth is how students in Austin and beyond put leadership into action — organizing drives, collecting donations, and showing up for communities in Bangladesh and at home.",
+    whyJoin:
+      "Students join because the work is real: you plan it, run it, and see what it accomplishes. No experience required — just a willing heart and a project you believe in.",
+    joinHeadline: "Join Ongshi Youth",
+    joinText:
+      "Students sign up here; a coordinator follows up with your parent/guardian.",
+    joinFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSd-example-ongshi-youth/viewform",
+  };
+
+  await seedPublishedAndDraft(youthPage);
 
   console.log("Done. homePage and siteSettings have matching published + draft documents.");
 }

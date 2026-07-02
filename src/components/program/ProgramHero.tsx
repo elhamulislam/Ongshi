@@ -24,7 +24,7 @@ export function ProgramHero({
   sponsorable?: boolean | null;
   suggestedGift?: string | null;
 }) {
-  const pillarLabel = PILLAR_LABELS[pillar] ?? pillar;
+  const pillarLabel = PILLAR_LABELS[pillar as keyof typeof PILLAR_LABELS] ?? pillar;
 
   return (
     <section className="border-b border-line pt-10 pb-12 md:pt-20 md:pb-16">

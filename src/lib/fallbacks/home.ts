@@ -31,17 +31,32 @@ export const fallbackSiteSettings: SiteSettingsData = {
     "Ongshi is a registered 501(c)(3) nonprofit. Donations are tax-deductible.",
   donation: {
     platform: "zeffy",
-    primaryUrl: null,
+    primaryUrl: "https://www.zeffy.com/en-US/donation-form/ongshi-general",
     sponsorshipTiers: [
-      { key: "eye", label: "Sponsor an Eye", amount: null, url: null },
+      {
+        key: "eye",
+        label: "Sponsor an Eye",
+        amount: null,
+        url: "https://www.zeffy.com/en-US/donation-form/ongshi-sponsor-an-eye",
+      },
       {
         key: "cervical-cancer",
         label: "Cervical Cancer Elimination",
         amount: null,
-        url: null,
+        url: "https://www.zeffy.com/en-US/donation-form/ongshi-cervical-cancer",
       },
-      { key: "child", label: "Sponsor a Child", amount: "$30 / month", url: null },
-      { key: "village", label: "Sponsor a Village", amount: null, url: null },
+      {
+        key: "child",
+        label: "Sponsor a Child",
+        amount: "$30 / month",
+        url: "https://www.zeffy.com/en-US/donation-form/ongshi-sponsor-a-child",
+      },
+      {
+        key: "village",
+        label: "Sponsor a Village",
+        amount: null,
+        url: "https://www.zeffy.com/en-US/donation-form/ongshi-sponsor-a-village",
+      },
     ],
   },
 };

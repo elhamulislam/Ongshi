@@ -31,7 +31,9 @@ export function SponsorshipHook({
       <Wrap className="relative z-[2] py-12 md:py-[4.5rem]">
         <div className="grid items-center gap-8 lg:grid-cols-[1.3fr_auto]">
           <div>
-            <Eyebrow className="text-[#A7DBB3]">Become a monthly partner</Eyebrow>
+            <Eyebrow tone="custom" className="text-[#A7DBB3]">
+              Become a monthly partner
+            </Eyebrow>
             <h2 className="mt-3 font-display text-[clamp(1.8rem,3.4vw,2.5rem)] font-semibold leading-tight text-white">
               {hook.headline}
             </h2>
