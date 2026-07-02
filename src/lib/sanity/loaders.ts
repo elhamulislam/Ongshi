@@ -1,6 +1,10 @@
 import { isSanityConfigured } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/live";
 import { HOME_PAGE_QUERY, HOME_PARTNERS_QUERY } from "@/sanity/queries/homePage";
+import {
+  PROGRAM_BY_SLUG_QUERY,
+  PROGRAMS_INDEX_QUERY,
+} from "@/sanity/queries/program";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
 import {
   fallbackHomePage,
@@ -10,6 +14,12 @@ import {
   type HomePageData,
   type SiteSettingsData,
 } from "@/lib/fallbacks/home";
+import {
+  fallbackPrograms,
+  getFallbackProgram,
+  type ProgramCard,
+  type ProgramData,
+} from "@/lib/fallbacks/program";
 import { getDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
 
@@ -152,5 +162,60 @@ export async function getPartners(): Promise<
     return partners?.length ? partners : fallbackPartners;
   } catch {
     return fallbackPartners;
+  }
+}
+
+function mapProgramData(raw: ProgramData | null): ProgramData | null {
+  if (!raw?.slug || !raw.title || !raw.heroImageUrl) {
+    return null;
+  }
+
+  return {
+    ...raw,
+    heroImageAlt: raw.heroImageAlt ?? raw.title,
+    impactStats: raw.impactStats ?? [],
+    gallery: raw.gallery ?? [],
+    relatedStories: raw.relatedStories ?? [],
+  };
+}
+
+export async function getProgramBySlug(slug: string): Promise<ProgramData | null> {
+  if (!isSanityConfigured) {
+    return getFallbackProgram(slug);
+  }
+
+  try {
+    const { data } = await sanityFetch({
+      query: PROGRAM_BY_SLUG_QUERY,
+      params: { slug },
+      perspective: "published",
+      stega: false,
+    });
+    const mapped = mapProgramData(data as ProgramData | null);
+    if (mapped) {
+      return mapped;
+    }
+  } catch {
+    // fall through to local fallback
+  }
+
+  return getFallbackProgram(slug);
+}
+
+export async function getProgramsIndex(): Promise<ProgramCard[]> {
+  if (!isSanityConfigured) {
+    return fallbackPrograms;
+  }
+
+  try {
+    const { data } = await sanityFetch({
+      query: PROGRAMS_INDEX_QUERY,
+      perspective: "published",
+      stega: false,
+    });
+    const programs = data as ProgramCard[] | null;
+    return programs?.length ? programs : fallbackPrograms;
+  } catch {
+    return fallbackPrograms;
   }
 }

@@ -41,3 +41,25 @@ export function getTierDonateUrl(
   }
   return getDonateUrl(donation);
 }
+
+const PROGRAM_TIER_KEYS: Record<string, "eye" | "child" | "village"> = {
+  "sponsor-an-eye": "eye",
+  "sponsor-a-village": "village",
+  "sponsor-a-child": "child",
+};
+
+/** Sponsor/Donate URL for a program — respects override, then tier, then global config. */
+export function getProgramSponsorUrl(
+  slug: string,
+  programOverride?: string | null,
+  donation?: DonationConfig | null,
+): string {
+  if (programOverride) {
+    return programOverride;
+  }
+  const tier = PROGRAM_TIER_KEYS[slug];
+  if (tier) {
+    return getTierDonateUrl(tier, donation);
+  }
+  return getDonateUrl(donation);
+}
