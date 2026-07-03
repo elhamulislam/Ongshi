@@ -129,6 +129,7 @@ async function seed() {
       "images/rebuild-roof.jpg",
       "A man fits a new metal roof onto a home being rebuilt after flooding",
     ),
+    logo: await uploadImage("images/logo.png", "Ongshi logo"),
   };
 
   console.log("Creating impact stats…");
@@ -418,6 +419,127 @@ async function seed() {
     await client.createOrReplace(doc);
   }
 
+  console.log("Creating campaigns & events…");
+
+  const campaigns = [
+    {
+      _id: "campaign-austin-shoe-drive",
+      _type: "campaign",
+      title: "Austin Youth Shoe Drive",
+      slug: { _type: "slug", current: "austin-youth-shoe-drive" },
+      category: "youth-project",
+      youthLed: true,
+      startDate: "2026-07-15",
+      status: "upcoming",
+      location: "Austin, Texas",
+      summary:
+        "Students collect shoes for families in Bangladesh ahead of the school year.",
+      heroImage: images.youth,
+      ctaType: "volunteer",
+      ctaUrl: "https://docs.google.com/forms/d/e/1FAIpQLSd-example-ongshi-volunteer/viewform",
+      details: [
+        block(
+          "Ongshi Youth is collecting new and gently used shoes across Austin. Drop-off locations open two weeks before the drive.",
+        ),
+      ],
+    },
+    {
+      _id: "campaign-sylhet-eye-camp",
+      _type: "campaign",
+      title: "Sylhet Eye Camp",
+      slug: { _type: "slug", current: "sylhet-eye-camp" },
+      category: "eye-medical-camp",
+      youthLed: false,
+      startDate: "2026-08-22",
+      endDate: "2026-08-24",
+      status: "upcoming",
+      location: "Sylhet, Bangladesh",
+      summary:
+        "A three-day camp offering cataract screening, surgery, and glasses for rural communities.",
+      heroImage: images.eyeCamp,
+      ctaType: "donate",
+      supportsProgram: { _type: "reference", _ref: "program-sponsor-an-eye" },
+      details: [
+        block(
+          "Local clinicians and Ongshi volunteers will screen patients, perform cataract surgeries, and fit glasses on site.",
+        ),
+      ],
+    },
+    {
+      _id: "campaign-coat-collection",
+      _type: "campaign",
+      title: "Winter Coat Collection",
+      slug: { _type: "slug", current: "winter-coat-collection" },
+      category: "community-event",
+      youthLed: true,
+      startDate: "2026-06-01",
+      endDate: "2026-07-30",
+      status: "ongoing",
+      location: "Austin, Texas",
+      summary:
+        "Youth volunteers are collecting coats for families ahead of winter relief shipments.",
+      heroImage: images.youth,
+      ctaType: "register",
+      ctaUrl: "https://docs.google.com/forms/d/e/1FAIpQLSd-example-ongshi-youth/viewform",
+      details: [
+        block(
+          "Drop coats at partner sites across Austin through July. Sorted coats ship with the next Bangladesh relief container.",
+        ),
+      ],
+    },
+    {
+      _id: "campaign-2025-fundraiser",
+      _type: "campaign",
+      title: "2025 Partner in Hope Gala",
+      slug: { _type: "slug", current: "2025-partner-in-hope-gala" },
+      category: "fundraiser",
+      youthLed: false,
+      startDate: "2025-11-08",
+      status: "completed",
+      location: "Austin, Texas",
+      summary:
+        "An evening celebrating sponsors, volunteers, and the communities Ongshi serves.",
+      heroImage: images.heroGlasses,
+      ctaType: "none",
+      outcome:
+        "Raised $42,000 for eye camps and child sponsorships — every dollar went to programs on the ground.",
+      details: [
+        block(
+          "More than 200 guests joined us for an evening of stories from the field, live music, and a chance to meet the volunteers who make the work possible.",
+        ),
+      ],
+      gallery: [images.youth, images.eyeCamp],
+    },
+    {
+      _id: "campaign-flood-relief-2024",
+      _type: "campaign",
+      title: "2024 Flood Relief Response",
+      slug: { _type: "slug", current: "2024-flood-relief-response" },
+      category: "relief-response",
+      youthLed: false,
+      startDate: "2024-09-12",
+      endDate: "2024-12-01",
+      status: "completed",
+      location: "Sylhet, Bangladesh",
+      summary:
+        "Emergency materials and labor to rebuild homes after record flooding in northeast Bangladesh.",
+      heroImage: images.rebuild,
+      ctaType: "donate",
+      supportsProgram: { _type: "reference", _ref: "program-sponsor-a-village" },
+      outcome: "Rebuilt 20 homes and distributed roofing materials to three villages.",
+      details: [
+        block(
+          "Volunteers purchased tin, lumber, and cement locally, hired skilled labor, and worked alongside families to raise walls and roofs before monsoon season.",
+        ),
+      ],
+      gallery: [images.rebuild, images.rebuildRoof],
+    },
+  ];
+
+  for (const doc of campaigns) {
+    await seedPublishedAndDraft(doc);
+  }
+
   console.log("Creating site settings…");
 
   const siteSettings = {
@@ -589,6 +711,81 @@ async function seed() {
   };
 
   await seedPublishedAndDraft(getInvolvedPage);
+
+  console.log("Creating About page…");
+
+  const aboutPage = {
+    _id: "aboutPage",
+    _type: "aboutPage",
+    headline: "A partner in hope",
+    intro:
+      "Ongshi is a volunteer-driven nonprofit working across Bangladesh and Austin, Texas — restoring sight, rebuilding after floods, sponsoring children, and bringing care to communities that need it.",
+    mission:
+      "Our mission is to share what we have so families can rebuild their lives with dignity. The name Ongshi comes from the Bengali word for share or part — because every gift, every hour, and every act of service is someone taking their share in the work.",
+    impactStats: impactStats.map((s) => ({ _type: "reference", _ref: s._id })),
+    transparencyStatement:
+      "Ongshi is volunteer-led and registered as a 501(c)(3) nonprofit. Donations fund programs on the ground — not overhead. We share results openly and will post annual reports here as they become available.",
+  };
+
+  await seedPublishedAndDraft(aboutPage);
+
+  console.log("Creating team members…");
+
+  const teamMembers = [
+    {
+      _id: "teamMember-chair",
+      _type: "teamMember",
+      name: "Elhamul Islam",
+      role: "President & Founder",
+      photo: images.heroGlasses,
+      order: 1,
+    },
+    {
+      _id: "teamMember-treasurer",
+      _type: "teamMember",
+      name: "Nadia Rahman",
+      role: "Board Treasurer",
+      photo: images.eyeCamp,
+      order: 2,
+    },
+    {
+      _id: "teamMember-programs",
+      _type: "teamMember",
+      name: "David Chen",
+      role: "Director of Programs",
+      photo: images.youth,
+      order: 3,
+    },
+  ];
+
+  for (const doc of teamMembers) {
+    await seedPublishedAndDraft(doc);
+  }
+
+  console.log("Creating partners…");
+
+  const partners = [
+    {
+      _id: "partner-rotary",
+      _type: "partner",
+      name: "Rotary International",
+      logo: images.logo,
+      website: "https://www.rotary.org",
+      order: 1,
+    },
+    {
+      _id: "partner-soles",
+      _type: "partner",
+      name: "Soles4Souls",
+      logo: images.logo,
+      website: "https://soles4souls.org",
+      order: 2,
+    },
+  ];
+
+  for (const doc of partners) {
+    await seedPublishedAndDraft(doc);
+  }
 
   console.log("Done. homePage and siteSettings have matching published + draft documents.");
 }

@@ -8,6 +8,9 @@ import {
   PROGRAMS_INDEX_QUERY,
 } from "@/sanity/queries/program";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
+import { TEAM_MEMBERS_QUERY } from "@/sanity/queries/teamMember";
+import { ABOUT_PAGE_QUERY } from "@/sanity/queries/aboutPage";
+import { CAMPAIGN_BY_SLUG_QUERY, EVENTS_PAST_QUERY, EVENTS_UPCOMING_QUERY } from "@/sanity/queries/campaign";
 import { GET_INVOLVED_PAGE_QUERY } from "@/sanity/queries/getInvolvedPage";
 import { YOUTH_PAGE_QUERY } from "@/sanity/queries/youthPage";
 import {
@@ -30,6 +33,8 @@ import {
 } from "@/lib/fallbacks/program";
 import { getGeneralDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
+import type { AboutPageData } from "@/lib/sanity/aboutPage";
+import type { EventCard, EventData, EventsIndexData } from "@/lib/sanity/events";
 import type { GetInvolvedPageData } from "@/lib/sanity/getInvolvedPage";
 import type { YouthPageData } from "@/lib/sanity/youthPage";
 
@@ -307,6 +312,224 @@ function mapGetInvolvedPageQuery(
     newsletterText: page.newsletterText,
     seo: page.seo,
   };
+}
+
+type AboutPageQueryResult = {
+  headline?: string | null;
+  intro?: string | null;
+  mission?: string | null;
+  impactStats?: Array<{ value?: string | null; label?: string | null }> | null;
+  transparencyStatement?: string | null;
+  annualReports?: Array<{ label?: string | null; url?: string | null }> | null;
+  seo?: AboutPageData["seo"];
+};
+
+function mapAboutPageQuery(page: AboutPageQueryResult | null): AboutPageData | null {
+  if (!page?.headline || !page?.intro) {
+    return null;
+  }
+
+  const impactStats =
+    page.impactStats
+      ?.filter((stat) => stat.value && stat.label)
+      .map((stat) => ({
+        value: stat.value!,
+        label: stat.label!,
+      })) ?? [];
+
+  const annualReports =
+    page.annualReports
+      ?.filter((report) => report.label && report.url)
+      .map((report) => ({
+        label: report.label!,
+        url: report.url!,
+      })) ?? [];
+
+  return {
+    headline: page.headline,
+    intro: page.intro,
+    mission: page.mission,
+    impactStats,
+    transparencyStatement: page.transparencyStatement,
+    annualReports,
+    seo: page.seo,
+  };
+}
+
+function mapEventCard(raw: EventCard): EventCard | null {
+  if (!raw.slug || !raw.title || !raw.startDate) {
+    return null;
+  }
+
+  return raw;
+}
+
+export async function getEventsIndex(): Promise<EventsIndexData> {
+  if (!isSanityConfigured || !serverClient) {
+    return { upcoming: [], past: [] };
+  }
+
+  try {
+    const [upcomingRaw, pastRaw] = await Promise.all([
+      serverClient.fetch(EVENTS_UPCOMING_QUERY),
+      serverClient.fetch(EVENTS_PAST_QUERY),
+    ]);
+
+    const upcoming =
+      ((upcomingRaw as EventCard[] | null) ?? [])
+        .map(mapEventCard)
+        .filter((event): event is EventCard => event !== null) ?? [];
+    const past =
+      ((pastRaw as EventCard[] | null) ?? [])
+        .map(mapEventCard)
+        .filter((event): event is EventCard => event !== null) ?? [];
+
+    return { upcoming, past };
+  } catch {
+    return { upcoming: [], past: [] };
+  }
+}
+
+type EventQueryResult = {
+  _id?: string | null;
+  title?: string | null;
+  slug?: string | null;
+  category?: string | null;
+  summary?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  location?: string | null;
+  status?: string | null;
+  heroImageUrl?: string | null;
+  heroImageAlt?: string | null;
+  details?: EventData["details"];
+  outcome?: string | null;
+  ctaType?: string | null;
+  ctaUrl?: string | null;
+  supportsProgramSlug?: string | null;
+  gallery?: Array<{ imageUrl?: string | null; imageAlt?: string | null }> | null;
+  seo?: EventData["seo"];
+};
+
+function mapEventQuery(raw: EventQueryResult | null): EventData | null {
+  if (!raw?._id || !raw.slug || !raw.title || !raw.summary || !raw.startDate || !raw.category) {
+    return null;
+  }
+
+  const gallery =
+    raw.gallery
+      ?.filter((image) => image.imageUrl)
+      .map((image) => ({
+        imageUrl: image.imageUrl!,
+        imageAlt: image.imageAlt ?? "",
+      })) ?? [];
+
+  return {
+    _id: raw._id,
+    title: raw.title,
+    slug: raw.slug,
+    category: raw.category,
+    summary: raw.summary,
+    startDate: raw.startDate,
+    endDate: raw.endDate,
+    location: raw.location,
+    status: raw.status,
+    heroImageUrl: raw.heroImageUrl,
+    heroImageAlt: raw.heroImageAlt,
+    details: raw.details,
+    outcome: raw.outcome,
+    ctaType: raw.ctaType,
+    ctaUrl: raw.ctaUrl,
+    supportsProgramSlug: raw.supportsProgramSlug,
+    gallery,
+    seo: raw.seo,
+  };
+}
+
+export async function getEventBySlug(slug: string): Promise<EventData | null> {
+  if (!isSanityConfigured || !serverClient) {
+    return null;
+  }
+
+  try {
+    const data = await serverClient.fetch(CAMPAIGN_BY_SLUG_QUERY, { slug });
+    return mapEventQuery(data as EventQueryResult | null);
+  } catch {
+    return null;
+  }
+}
+
+export async function getAboutPageData(): Promise<AboutPageData | null> {
+  if (!isSanityConfigured || !serverClient) {
+    return null;
+  }
+
+  try {
+    const data = await serverClient.fetch(ABOUT_PAGE_QUERY);
+    return mapAboutPageQuery(data as AboutPageQueryResult | null);
+  } catch {
+    return null;
+  }
+}
+
+type TeamMemberQueryResult = {
+  _id: string;
+  name?: string | null;
+  role?: string | null;
+  photoUrl?: string | null;
+  photoAlt?: string | null;
+};
+
+export async function getTeamMembers(): Promise<
+  Array<{
+    _id: string;
+    name: string;
+    role?: string | null;
+    photoUrl?: string | null;
+    photoAlt?: string | null;
+  }>
+> {
+  if (!isSanityConfigured || !serverClient) {
+    return [];
+  }
+
+  try {
+    const data = await serverClient.fetch(TEAM_MEMBERS_QUERY);
+    const members = (data as TeamMemberQueryResult[] | null) ?? [];
+    return members
+      .filter((member) => member.name && member._id)
+      .map((member) => ({
+        _id: member._id,
+        name: member.name!,
+        role: member.role,
+        photoUrl: member.photoUrl,
+        photoAlt: member.photoAlt,
+      }));
+  } catch {
+    return [];
+  }
+}
+
+type PartnerWithLogo = {
+  _id: string;
+  name: string;
+  website?: string | null;
+  logoUrl?: string | null;
+  logoAlt?: string | null;
+};
+
+export async function getPartnersWithLogos(): Promise<PartnerWithLogo[]> {
+  if (!isSanityConfigured || !serverClient) {
+    return [];
+  }
+
+  try {
+    const data = await serverClient.fetch(HOME_PARTNERS_QUERY);
+    const partners = (data as PartnerWithLogo[] | null) ?? [];
+    return partners.filter((partner) => partner.name && partner.logoUrl);
+  } catch {
+    return [];
+  }
 }
 
 export async function getGetInvolvedPageData(): Promise<GetInvolvedPageData | null> {

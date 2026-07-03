@@ -6,6 +6,7 @@ const singletonTypes = new Set([
   "donatePage",
   "youthPage",
   "getInvolvedPage",
+  "aboutPage",
 ]);
 
 const singletonItems = [
@@ -18,6 +19,7 @@ const singletonItems = [
     schemaType: "getInvolvedPage",
     documentId: "getInvolvedPage",
   },
+  { title: "About page", schemaType: "aboutPage", documentId: "aboutPage" },
 ];
 
 export const structure: StructureResolver = (S) =>
