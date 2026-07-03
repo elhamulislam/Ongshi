@@ -92,7 +92,10 @@ function mapHomePageQuery(
       heroSubtext: page.heroSubtext ?? fallbackHomePage.heroSubtext,
       heroPrimaryCta: {
         label: page.heroPrimaryCta?.label ?? fallbackHomePage.heroPrimaryCta.label,
-        url: page.heroPrimaryCta?.url ?? donateUrl,
+        url:
+          page.heroPrimaryCta?.url ??
+          donateUrl ??
+          fallbackHomePage.heroPrimaryCta.url,
       },
       heroSecondaryCta: {
         label: page.heroSecondaryCta?.label ?? fallbackHomePage.heroSecondaryCta.label,
@@ -326,7 +329,10 @@ export async function getStoriesIndex(tag?: string): Promise<StoryCard[]> {
   }
 
   try {
-    const data = await serverClient.fetch(STORIES_INDEX_QUERY, { tag: tag ?? null });
+    // $storyTag — not $tag; `tag` is reserved on Sanity QueryParams (request option)
+    const data = await serverClient.fetch(STORIES_INDEX_QUERY, {
+      storyTag: tag ?? "",
+    });
     const stories = (data as StoryCard[] | null) ?? [];
     return stories
       .map(mapStoryCard)
@@ -353,21 +359,27 @@ type StoryQueryResult = {
   seo?: StoryData["seo"];
 };
 
+function mapStoryAbout(
+  about: StoryQueryResult["about"],
+): StoryData["about"] {
+  if (!about?._type || !about.title || !about.slug) {
+    return null;
+  }
+  if (about._type !== "program" && about._type !== "campaign") {
+    return null;
+  }
+
+  return {
+    _type: about._type,
+    title: about.title,
+    slug: about.slug,
+  };
+}
+
 function mapStoryQuery(raw: StoryQueryResult | null): StoryData | null {
   if (!raw?._id || !raw.slug || !raw.title || !raw.publishedAt || !raw.body?.length) {
     return null;
   }
-
-  const about =
-    raw.about?._type && raw.about.title && raw.about.slug
-      ? raw.about._type === "program" || raw.about._type === "campaign"
-        ? {
-            _type: raw.about._type,
-            title: raw.about.title,
-            slug: raw.about.slug,
-          }
-        : null
-      : null;
 
   return {
     _id: raw._id,
@@ -378,7 +390,7 @@ function mapStoryQuery(raw: StoryQueryResult | null): StoryData | null {
     coverImageUrl: raw.coverImageUrl,
     coverImageAlt: raw.coverImageAlt,
     body: raw.body,
-    about,
+    about: mapStoryAbout(raw.about),
     seo: raw.seo,
   };
 }

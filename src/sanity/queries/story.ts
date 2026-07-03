@@ -1,19 +1,15 @@
 import { defineQuery } from "next-sanity";
 
-const storyCardFields = `
-  _id,
-  title,
-  "slug": slug.current,
-  publishedAt,
-  tags,
-  "excerpt": pt::text(body),
-  "imageUrl": coverImage.asset->url,
-  "imageAlt": coverImage.alt
-`;
-
 export const STORIES_INDEX_QUERY = defineQuery(`
-  *[_type == "story" && (!$tag || $tag in tags)] | order(publishedAt desc){
-    ${storyCardFields}
+  *[_type == "story" && ($storyTag == "" || $storyTag in tags)] | order(publishedAt desc){
+    _id,
+    title,
+    "slug": slug.current,
+    publishedAt,
+    tags,
+    "excerpt": pt::text(body),
+    "imageUrl": coverImage.asset->url,
+    "imageAlt": coverImage.alt
   }
 `);
 
