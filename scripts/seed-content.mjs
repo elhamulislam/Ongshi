@@ -429,6 +429,10 @@ async function seed() {
     address: "Austin, Texas",
     nonprofitLine:
       "Ongshi is a registered 501(c)(3) nonprofit. Donations are tax-deductible.",
+    newsletter: {
+      provider: "Zeffy",
+      newsletterEmbed: `<div><iframe title='Signup form powered by Zeffy' style='position:absolute;border:0;top:0;left:0;bottom:0;right:0;width:100%;height:100%' src='https://www.zeffy.com/en-US/embed/newsletter-form/subscribe-to-get-notified-about-new-events-74402' allowTransparency="true"></iframe></div>`,
+    },
     donation: {
       platform: "zeffy",
       primaryUrl: ZEFFY_GENERAL,
@@ -563,6 +567,28 @@ async function seed() {
   };
 
   await seedPublishedAndDraft(youthPage);
+
+  console.log("Creating Get Involved page…");
+
+  const getInvolvedPage = {
+    _id: "getInvolvedPage",
+    _type: "getInvolvedPage",
+    headline: "Ways to stand with Ongshi",
+    intro:
+      "Whether you volunteer at a camp, partner as an organization, join Ongshi Youth, or stay in touch — there is a real way to be part of this work.",
+    detail:
+      "Giving opens doors. So does showing up. Browse below for the option that fits you.",
+    volunteerHeadline: "Volunteer with us",
+    volunteerText:
+      "Lend your time and skills to camps, drives, and events in Austin and beyond. Sign up and a coordinator will follow up.",
+    volunteerFormUrl:
+      "https://docs.google.com/forms/d/e/1FAIpQLSd-example-ongshi-volunteer/viewform",
+    newsletterHeadline: "Stay close to the work",
+    newsletterText:
+      "A short note now and then — real stories from the field and the people your gifts reach.",
+  };
+
+  await seedPublishedAndDraft(getInvolvedPage);
 
   console.log("Done. homePage and siteSettings have matching published + draft documents.");
 }

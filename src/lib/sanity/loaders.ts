@@ -8,6 +8,7 @@ import {
   PROGRAMS_INDEX_QUERY,
 } from "@/sanity/queries/program";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
+import { GET_INVOLVED_PAGE_QUERY } from "@/sanity/queries/getInvolvedPage";
 import { YOUTH_PAGE_QUERY } from "@/sanity/queries/youthPage";
 import {
   fallbackDonatePage,
@@ -29,6 +30,7 @@ import {
 } from "@/lib/fallbacks/program";
 import { getGeneralDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
+import type { GetInvolvedPageData } from "@/lib/sanity/getInvolvedPage";
 import type { YouthPageData } from "@/lib/sanity/youthPage";
 
 type HomePageQueryResult = {
@@ -273,6 +275,51 @@ function mapYouthPageQuery(page: YouthPageQueryResult | null): YouthPageData | n
     joinFormUrl: page.joinFormUrl,
     seo: page.seo,
   };
+}
+
+type GetInvolvedPageQueryResult = {
+  headline?: string | null;
+  intro?: string | null;
+  detail?: string | null;
+  volunteerHeadline?: string | null;
+  volunteerText?: string | null;
+  volunteerFormUrl?: string | null;
+  newsletterHeadline?: string | null;
+  newsletterText?: string | null;
+  seo?: GetInvolvedPageData["seo"];
+};
+
+function mapGetInvolvedPageQuery(
+  page: GetInvolvedPageQueryResult | null,
+): GetInvolvedPageData | null {
+  if (!page?.headline || !page?.intro) {
+    return null;
+  }
+
+  return {
+    headline: page.headline,
+    intro: page.intro,
+    detail: page.detail,
+    volunteerHeadline: page.volunteerHeadline,
+    volunteerText: page.volunteerText,
+    volunteerFormUrl: page.volunteerFormUrl,
+    newsletterHeadline: page.newsletterHeadline,
+    newsletterText: page.newsletterText,
+    seo: page.seo,
+  };
+}
+
+export async function getGetInvolvedPageData(): Promise<GetInvolvedPageData | null> {
+  if (!isSanityConfigured || !serverClient) {
+    return null;
+  }
+
+  try {
+    const data = await serverClient.fetch(GET_INVOLVED_PAGE_QUERY);
+    return mapGetInvolvedPageQuery(data as GetInvolvedPageQueryResult | null);
+  } catch {
+    return null;
+  }
 }
 
 export async function getYouthPageData(): Promise<YouthPageData | null> {

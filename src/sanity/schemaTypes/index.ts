@@ -20,6 +20,7 @@ import { program } from "./program";
 import { siteSettings } from "./siteSettings";
 import { story } from "./story";
 import { teamMember } from "./teamMember";
+import { getInvolvedPage } from "./getInvolvedPage";
 import { youthPage } from "./youthPage";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
@@ -46,6 +47,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     homePage,
     donatePage,
     youthPage,
+    getInvolvedPage,
     page,
   ],
 };

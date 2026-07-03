@@ -17,7 +17,7 @@ export type SiteSettingsData = {
   newsletter?: {
     provider?: string | null;
     signupUrl?: string | null;
-    embedCode?: string | null;
+    newsletterEmbed?: string | null;
   } | null;
   donation?: DonationConfig | null;
 };
