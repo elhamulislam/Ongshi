@@ -8,6 +8,7 @@ import {
   PROGRAMS_INDEX_QUERY,
 } from "@/sanity/queries/program";
 import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
+import { STORIES_INDEX_QUERY, STORY_BY_SLUG_QUERY } from "@/sanity/queries/story";
 import { TEAM_MEMBERS_QUERY } from "@/sanity/queries/teamMember";
 import { ABOUT_PAGE_QUERY } from "@/sanity/queries/aboutPage";
 import { CAMPAIGN_BY_SLUG_QUERY, EVENTS_PAST_QUERY, EVENTS_UPCOMING_QUERY } from "@/sanity/queries/campaign";
@@ -33,6 +34,7 @@ import {
 } from "@/lib/fallbacks/program";
 import { getGeneralDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
+import type { StoryCard, StoryData } from "@/lib/sanity/story";
 import type { AboutPageData } from "@/lib/sanity/aboutPage";
 import type { EventCard, EventData, EventsIndexData } from "@/lib/sanity/events";
 import type { GetInvolvedPageData } from "@/lib/sanity/getInvolvedPage";
@@ -312,6 +314,90 @@ function mapGetInvolvedPageQuery(
     newsletterText: page.newsletterText,
     seo: page.seo,
   };
+}
+
+function mapStoryCard(raw: StoryCard): StoryCard | null {
+  if (!raw.slug || !raw.title || !raw.publishedAt) {
+    return null;
+  }
+
+  return raw;
+}
+
+export async function getStoriesIndex(tag?: string): Promise<StoryCard[]> {
+  if (!isSanityConfigured || !serverClient) {
+    return [];
+  }
+
+  try {
+    const data = await serverClient.fetch(STORIES_INDEX_QUERY, { tag: tag ?? null });
+    const stories = (data as StoryCard[] | null) ?? [];
+    return stories
+      .map(mapStoryCard)
+      .filter((story): story is StoryCard => story !== null);
+  } catch {
+    return [];
+  }
+}
+
+type StoryQueryResult = {
+  _id?: string | null;
+  title?: string | null;
+  slug?: string | null;
+  publishedAt?: string | null;
+  tags?: string[] | null;
+  coverImageUrl?: string | null;
+  coverImageAlt?: string | null;
+  body?: StoryData["body"];
+  about?: {
+    _type?: string | null;
+    title?: string | null;
+    slug?: string | null;
+  } | null;
+  seo?: StoryData["seo"];
+};
+
+function mapStoryQuery(raw: StoryQueryResult | null): StoryData | null {
+  if (!raw?._id || !raw.slug || !raw.title || !raw.publishedAt || !raw.body?.length) {
+    return null;
+  }
+
+  const about =
+    raw.about?._type && raw.about.title && raw.about.slug
+      ? raw.about._type === "program" || raw.about._type === "campaign"
+        ? {
+            _type: raw.about._type,
+            title: raw.about.title,
+            slug: raw.about.slug,
+          }
+        : null
+      : null;
+
+  return {
+    _id: raw._id,
+    title: raw.title,
+    slug: raw.slug,
+    publishedAt: raw.publishedAt,
+    tags: raw.tags,
+    coverImageUrl: raw.coverImageUrl,
+    coverImageAlt: raw.coverImageAlt,
+    body: raw.body,
+    about,
+    seo: raw.seo,
+  };
+}
+
+export async function getStoryBySlug(slug: string): Promise<StoryData | null> {
+  if (!isSanityConfigured || !serverClient) {
+    return null;
+  }
+
+  try {
+    const data = await serverClient.fetch(STORY_BY_SLUG_QUERY, { slug });
+    return mapStoryQuery(data as StoryQueryResult | null);
+  } catch {
+    return null;
+  }
 }
 
 type AboutPageQueryResult = {
