@@ -1,6 +1,6 @@
 import { GraduationCap } from "lucide-react";
 
-import { Button } from "@/components/ui/Button";
+import { YouthJoinForm } from "@/components/forms/YouthJoinForm";
 import { Wrap } from "@/components/ui/Wrap";
 import { youthAccentClasses } from "@/components/youth/youthAccent";
 
@@ -8,21 +8,15 @@ import { YouthEyebrow } from "./YouthEyebrow";
 
 const defaultJoinHeadline = "Join Ongshi Youth";
 const defaultJoinText =
-  "Students sign up here; a coordinator follows up with your parent/guardian.";
+  "Students sign up here; a coordinator follows up with your parent or guardian.";
 
 export function YouthJoinCta({
   joinHeadline,
   joinText,
-  joinFormUrl,
 }: {
   joinHeadline?: string | null;
   joinText?: string | null;
-  joinFormUrl?: string | null;
 }) {
-  if (!joinFormUrl) {
-    return null;
-  }
-
   return (
     <section className="border-t border-line bg-[#E7EAFB]/55 py-14 md:py-20" id="join">
       <Wrap>
@@ -40,11 +34,10 @@ export function YouthJoinCta({
           <p className="mt-4 text-[1.05rem] leading-[1.65] text-muted">
             {joinText ?? defaultJoinText}
           </p>
-          <div className="mt-8">
-            <Button href={joinFormUrl} variant="blue">
-              Sign up
-            </Button>
-          </div>
+        </div>
+
+        <div className="mx-auto max-w-[640px]">
+          <YouthJoinForm />
         </div>
       </Wrap>
     </section>

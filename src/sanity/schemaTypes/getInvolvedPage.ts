@@ -40,12 +40,6 @@ export const getInvolvedPage = defineType({
       description: "One or two lines below the volunteer headline",
     }),
     defineField({
-      name: "volunteerFormUrl",
-      title: "Volunteer form URL",
-      type: "url",
-      description: "Google Form for volunteer sign-up (opens in a new tab)",
-    }),
-    defineField({
       name: "newsletterHeadline",
       title: "Newsletter headline",
       type: "string",

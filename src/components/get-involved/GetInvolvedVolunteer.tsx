@@ -1,26 +1,20 @@
 import { Handshake } from "lucide-react";
 
-import { Button } from "@/components/ui/Button";
+import { VolunteerForm } from "@/components/forms/VolunteerForm";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Wrap } from "@/components/ui/Wrap";
 
 const defaultVolunteerHeadline = "Volunteer with us";
 const defaultVolunteerText =
-  "Lend your time and skills to camps, drives, and events in Austin and beyond.";
+  "Lend your time and skills to camps, drives, and events in Austin and beyond. Sign up and a coordinator will follow up.";
 
 export function GetInvolvedVolunteer({
   volunteerHeadline,
   volunteerText,
-  volunteerFormUrl,
 }: {
   volunteerHeadline?: string | null;
   volunteerText?: string | null;
-  volunteerFormUrl?: string | null;
 }) {
-  if (!volunteerFormUrl) {
-    return null;
-  }
-
   return (
     <section className="border-t border-line bg-green-tint py-14 md:py-20" id="volunteer">
       <Wrap>
@@ -38,11 +32,10 @@ export function GetInvolvedVolunteer({
           <p className="mt-4 text-[1.05rem] leading-[1.65] text-muted">
             {volunteerText ?? defaultVolunteerText}
           </p>
-          <div className="mt-8">
-            <Button href={volunteerFormUrl} variant="ghost">
-              Sign up
-            </Button>
-          </div>
+        </div>
+
+        <div className="mx-auto max-w-[640px]">
+          <VolunteerForm />
         </div>
       </Wrap>
     </section>

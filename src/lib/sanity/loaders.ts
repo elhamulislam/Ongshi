@@ -264,7 +264,6 @@ type YouthPageQueryResult = {
   whyJoin?: string | null;
   joinHeadline?: string | null;
   joinText?: string | null;
-  joinFormUrl?: string | null;
   seo?: YouthPageData["seo"];
 };
 
@@ -279,7 +278,6 @@ function mapYouthPageQuery(page: YouthPageQueryResult | null): YouthPageData | n
     whyJoin: page.whyJoin,
     joinHeadline: page.joinHeadline,
     joinText: page.joinText,
-    joinFormUrl: page.joinFormUrl,
     seo: page.seo,
   };
 }
@@ -290,7 +288,6 @@ type GetInvolvedPageQueryResult = {
   detail?: string | null;
   volunteerHeadline?: string | null;
   volunteerText?: string | null;
-  volunteerFormUrl?: string | null;
   newsletterHeadline?: string | null;
   newsletterText?: string | null;
   seo?: GetInvolvedPageData["seo"];
@@ -309,7 +306,6 @@ function mapGetInvolvedPageQuery(
     detail: page.detail,
     volunteerHeadline: page.volunteerHeadline,
     volunteerText: page.volunteerText,
-    volunteerFormUrl: page.volunteerFormUrl,
     newsletterHeadline: page.newsletterHeadline,
     newsletterText: page.newsletterText,
     seo: page.seo,

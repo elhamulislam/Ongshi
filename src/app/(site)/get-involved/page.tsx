@@ -24,13 +24,10 @@ export default async function GetInvolvedPage() {
   return (
     <>
       {page ? <GetInvolvedIntro {...page} /> : null}
-      {page ? (
-        <GetInvolvedVolunteer
-          volunteerHeadline={page.volunteerHeadline}
-          volunteerText={page.volunteerText}
-          volunteerFormUrl={page.volunteerFormUrl}
-        />
-      ) : null}
+      <GetInvolvedVolunteer
+        volunteerHeadline={page?.volunteerHeadline}
+        volunteerText={page?.volunteerText}
+      />
       {page ? (
         <GetInvolvedNewsletter
           headline={page.newsletterHeadline}

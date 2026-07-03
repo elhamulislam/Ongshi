@@ -22,13 +22,10 @@ export default async function OngshiYouthPage() {
   return (
     <>
       {page ? <YouthIntro {...page} /> : null}
-      {page ? (
-        <YouthJoinCta
-          joinHeadline={page.joinHeadline}
-          joinText={page.joinText}
-          joinFormUrl={page.joinFormUrl}
-        />
-      ) : null}
+      <YouthJoinCta
+        joinHeadline={page?.joinHeadline}
+        joinText={page?.joinText}
+      />
     </>
   );
 }

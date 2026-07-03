@@ -4,7 +4,6 @@ export type YouthPageData = {
   whyJoin?: string | null;
   joinHeadline?: string | null;
   joinText?: string | null;
-  joinFormUrl?: string | null;
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;

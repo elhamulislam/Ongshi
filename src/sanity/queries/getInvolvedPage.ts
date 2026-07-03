@@ -7,7 +7,6 @@ export const GET_INVOLVED_PAGE_QUERY = defineQuery(`
     detail,
     volunteerHeadline,
     volunteerText,
-    volunteerFormUrl,
     newsletterHeadline,
     newsletterText,
     seo

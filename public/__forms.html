@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Ongshi form detection</title>
+  </head>
+  <body>
+    <!--
+      Netlify detects forms at build time from static HTML.
+      Next.js client forms submit here via fetch; field names must match.
+    -->
+    <form
+      name="volunteer"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="text" name="bot-field" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="tel" name="phone" />
+      <input type="text" name="city" />
+      <input type="text" name="help" />
+      <input type="text" name="skills" />
+      <input type="text" name="availability" />
+      <textarea name="message"></textarea>
+    </form>
+
+    <form
+      name="youth-join"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      hidden
+    >
+      <input type="text" name="bot-field" />
+      <input type="text" name="studentName" />
+      <input type="text" name="gradeAge" />
+      <input type="text" name="guardianName" />
+      <input type="email" name="guardianEmail" />
+      <textarea name="whyJoin"></textarea>
+    </form>
+  </body>
+</html>

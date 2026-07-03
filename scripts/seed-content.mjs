@@ -684,8 +684,7 @@ async function seed() {
       "Students join because the work is real: you plan it, run it, and see what it accomplishes. No experience required — just a willing heart and a project you believe in.",
     joinHeadline: "Join Ongshi Youth",
     joinText:
-      "Students sign up here; a coordinator follows up with your parent/guardian.",
-    joinFormUrl: "https://docs.google.com/forms/d/e/1FAIpQLSd-example-ongshi-youth/viewform",
+      "Students sign up here; a coordinator follows up with your parent or guardian.",
   };
 
   await seedPublishedAndDraft(youthPage);
@@ -703,8 +702,6 @@ async function seed() {
     volunteerHeadline: "Volunteer with us",
     volunteerText:
       "Lend your time and skills to camps, drives, and events in Austin and beyond. Sign up and a coordinator will follow up.",
-    volunteerFormUrl:
-      "https://docs.google.com/forms/d/e/1FAIpQLSd-example-ongshi-volunteer/viewform",
     newsletterHeadline: "Stay close to the work",
     newsletterText:
       "A short note now and then — real stories from the field and the people your gifts reach.",

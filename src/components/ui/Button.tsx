@@ -16,6 +16,7 @@ export function Button({
   className = "",
   type,
   onClick,
+  disabled,
 }: {
   href?: string;
   children: ReactNode;
@@ -23,8 +24,9 @@ export function Button({
   className?: string;
   type?: "button" | "submit";
   onClick?: () => void;
+  disabled?: boolean;
 }) {
-  const classes = `inline-flex items-center gap-2 rounded-full border-2 px-6 py-3.5 text-base font-semibold transition duration-150 ${variants[variant]} ${className}`;
+  const classes = `inline-flex items-center gap-2 rounded-full border-2 px-6 py-3.5 text-base font-semibold transition duration-150 ${variants[variant]} ${className} ${disabled ? "pointer-events-none opacity-60" : ""}`;
 
   if (href) {
     const isExternal = /^https?:\/\//.test(href);
@@ -49,7 +51,12 @@ export function Button({
   }
 
   return (
-    <button type={type ?? "button"} className={classes} onClick={onClick}>
+    <button
+      type={type ?? "button"}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </button>
   );

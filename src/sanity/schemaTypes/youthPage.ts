@@ -40,12 +40,6 @@ export const youthPage = defineType({
       description: "One line below the join headline",
     }),
     defineField({
-      name: "joinFormUrl",
-      title: "Join form URL",
-      type: "url",
-      description: "Google Form for student sign-up (opens in a new tab)",
-    }),
-    defineField({
       name: "seo",
       title: "SEO",
       type: "seo",

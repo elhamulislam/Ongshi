@@ -4,7 +4,6 @@ export type GetInvolvedPageData = {
   detail?: string | null;
   volunteerHeadline?: string | null;
   volunteerText?: string | null;
-  volunteerFormUrl?: string | null;
   newsletterHeadline?: string | null;
   newsletterText?: string | null;
   seo?: {

@@ -7,7 +7,6 @@ export const YOUTH_PAGE_QUERY = defineQuery(`
     whyJoin,
     joinHeadline,
     joinText,
-    joinFormUrl,
     seo
   }
 `);
