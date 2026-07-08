@@ -7,6 +7,9 @@ import { getDonateHubPath } from "@/lib/donation";
 import { getSiteSettings } from "@/lib/sanity/loaders";
 import { SanityLive } from "@/sanity/lib/live";
 
+/** ISR fallback: regenerate CMS-backed pages at most every 60s. Sanity Live also revalidates on publish via cache tags. */
+export const revalidate = 60;
+
 export default async function SiteLayout({
   children,
 }: Readonly<{

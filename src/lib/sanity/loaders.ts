@@ -1,6 +1,5 @@
 import { isSanityConfigured } from "@/sanity/env";
 import { sanityFetch } from "@/sanity/lib/live";
-import { serverClient } from "@/sanity/lib/serverClient";
 import { DONATE_PAGE_QUERY } from "@/sanity/queries/donatePage";
 import { HOME_PAGE_QUERY, HOME_PARTNERS_QUERY } from "@/sanity/queries/homePage";
 import {
@@ -39,6 +38,12 @@ import type { AboutPageData } from "@/lib/sanity/aboutPage";
 import type { EventCard, EventData, EventsIndexData } from "@/lib/sanity/events";
 import type { GetInvolvedPageData } from "@/lib/sanity/getInvolvedPage";
 import type { YouthPageData } from "@/lib/sanity/youthPage";
+
+/** Shared options for published CMS reads (tagged for Sanity Live + ISR). */
+const publishedFetch = {
+  perspective: "published" as const,
+  stega: false,
+};
 
 type HomePageQueryResult = {
   heroSlides?: Array<{
@@ -131,8 +136,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
   try {
     const { data } = await sanityFetch({
       query: SITE_SETTINGS_QUERY,
-      perspective: "published",
-      stega: false,
+      ...publishedFetch,
     });
     return (data as SiteSettingsData | null) ?? fallbackSiteSettings;
   } catch {
@@ -150,8 +154,7 @@ export async function getHomePageData(
   try {
     const { data } = await sanityFetch({
       query: HOME_PAGE_QUERY,
-      perspective: "published",
-      stega: false,
+      ...publishedFetch,
     });
 
     const mapped = mapHomePageQuery((data as HomePageQueryResult | null) ?? {}, donation);
@@ -175,8 +178,7 @@ export async function getPartners(): Promise<
   try {
     const { data } = await sanityFetch({
       query: HOME_PARTNERS_QUERY,
-      perspective: "published",
-      stega: false,
+      ...publishedFetch,
     });
     const partners = data as Array<{ _id: string; name: string; website?: string | null }> | null;
     return partners?.length ? partners : fallbackPartners;
@@ -208,8 +210,7 @@ export async function getProgramBySlug(slug: string): Promise<ProgramData | null
     const { data } = await sanityFetch({
       query: PROGRAM_BY_SLUG_QUERY,
       params: { slug },
-      perspective: "published",
-      stega: false,
+      ...publishedFetch,
     });
     return mapProgramData(data as ProgramData | null);
   } catch {
@@ -247,8 +248,7 @@ export async function getDonatePageData(): Promise<DonatePageData> {
   try {
     const { data } = await sanityFetch({
       query: DONATE_PAGE_QUERY,
-      perspective: "published",
-      stega: false,
+      ...publishedFetch,
     });
     const mapped = mapDonatePageQuery(data as DonatePageQueryResult | null);
     if (mapped) {
@@ -324,14 +324,16 @@ function mapStoryCard(raw: StoryCard): StoryCard | null {
 }
 
 export async function getStoriesIndex(tag?: string): Promise<StoryCard[]> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return [];
   }
 
   try {
     // $storyTag — not $tag; `tag` is reserved on Sanity QueryParams (request option)
-    const data = await serverClient.fetch(STORIES_INDEX_QUERY, {
-      storyTag: tag ?? "",
+    const { data } = await sanityFetch({
+      query: STORIES_INDEX_QUERY,
+      params: { storyTag: tag ?? "" },
+      ...publishedFetch,
     });
     const stories = (data as StoryCard[] | null) ?? [];
     return stories
@@ -396,12 +398,16 @@ function mapStoryQuery(raw: StoryQueryResult | null): StoryData | null {
 }
 
 export async function getStoryBySlug(slug: string): Promise<StoryData | null> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return null;
   }
 
   try {
-    const data = await serverClient.fetch(STORY_BY_SLUG_QUERY, { slug });
+    const { data } = await sanityFetch({
+      query: STORY_BY_SLUG_QUERY,
+      params: { slug },
+      ...publishedFetch,
+    });
     return mapStoryQuery(data as StoryQueryResult | null);
   } catch {
     return null;
@@ -459,22 +465,22 @@ function mapEventCard(raw: EventCard): EventCard | null {
 }
 
 export async function getEventsIndex(): Promise<EventsIndexData> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return { upcoming: [], past: [] };
   }
 
   try {
-    const [upcomingRaw, pastRaw] = await Promise.all([
-      serverClient.fetch(EVENTS_UPCOMING_QUERY),
-      serverClient.fetch(EVENTS_PAST_QUERY),
+    const [upcomingResult, pastResult] = await Promise.all([
+      sanityFetch({ query: EVENTS_UPCOMING_QUERY, ...publishedFetch }),
+      sanityFetch({ query: EVENTS_PAST_QUERY, ...publishedFetch }),
     ]);
 
     const upcoming =
-      ((upcomingRaw as EventCard[] | null) ?? [])
+      ((upcomingResult.data as EventCard[] | null) ?? [])
         .map(mapEventCard)
         .filter((event): event is EventCard => event !== null) ?? [];
     const past =
-      ((pastRaw as EventCard[] | null) ?? [])
+      ((pastResult.data as EventCard[] | null) ?? [])
         .map(mapEventCard)
         .filter((event): event is EventCard => event !== null) ?? [];
 
@@ -541,12 +547,16 @@ function mapEventQuery(raw: EventQueryResult | null): EventData | null {
 }
 
 export async function getEventBySlug(slug: string): Promise<EventData | null> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return null;
   }
 
   try {
-    const data = await serverClient.fetch(CAMPAIGN_BY_SLUG_QUERY, { slug });
+    const { data } = await sanityFetch({
+      query: CAMPAIGN_BY_SLUG_QUERY,
+      params: { slug },
+      ...publishedFetch,
+    });
     return mapEventQuery(data as EventQueryResult | null);
   } catch {
     return null;
@@ -554,12 +564,15 @@ export async function getEventBySlug(slug: string): Promise<EventData | null> {
 }
 
 export async function getAboutPageData(): Promise<AboutPageData | null> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return null;
   }
 
   try {
-    const data = await serverClient.fetch(ABOUT_PAGE_QUERY);
+    const { data } = await sanityFetch({
+      query: ABOUT_PAGE_QUERY,
+      ...publishedFetch,
+    });
     return mapAboutPageQuery(data as AboutPageQueryResult | null);
   } catch {
     return null;
@@ -583,12 +596,15 @@ export async function getTeamMembers(): Promise<
     photoAlt?: string | null;
   }>
 > {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return [];
   }
 
   try {
-    const data = await serverClient.fetch(TEAM_MEMBERS_QUERY);
+    const { data } = await sanityFetch({
+      query: TEAM_MEMBERS_QUERY,
+      ...publishedFetch,
+    });
     const members = (data as TeamMemberQueryResult[] | null) ?? [];
     return members
       .filter((member) => member.name && member._id)
@@ -613,12 +629,15 @@ type PartnerWithLogo = {
 };
 
 export async function getPartnersWithLogos(): Promise<PartnerWithLogo[]> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return [];
   }
 
   try {
-    const data = await serverClient.fetch(HOME_PARTNERS_QUERY);
+    const { data } = await sanityFetch({
+      query: HOME_PARTNERS_QUERY,
+      ...publishedFetch,
+    });
     const partners = (data as PartnerWithLogo[] | null) ?? [];
     return partners.filter((partner) => partner.name && partner.logoUrl);
   } catch {
@@ -627,12 +646,15 @@ export async function getPartnersWithLogos(): Promise<PartnerWithLogo[]> {
 }
 
 export async function getGetInvolvedPageData(): Promise<GetInvolvedPageData | null> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return null;
   }
 
   try {
-    const data = await serverClient.fetch(GET_INVOLVED_PAGE_QUERY);
+    const { data } = await sanityFetch({
+      query: GET_INVOLVED_PAGE_QUERY,
+      ...publishedFetch,
+    });
     return mapGetInvolvedPageQuery(data as GetInvolvedPageQueryResult | null);
   } catch {
     return null;
@@ -640,12 +662,15 @@ export async function getGetInvolvedPageData(): Promise<GetInvolvedPageData | nu
 }
 
 export async function getYouthPageData(): Promise<YouthPageData | null> {
-  if (!isSanityConfigured || !serverClient) {
+  if (!isSanityConfigured) {
     return null;
   }
 
   try {
-    const data = await serverClient.fetch(YOUTH_PAGE_QUERY);
+    const { data } = await sanityFetch({
+      query: YOUTH_PAGE_QUERY,
+      ...publishedFetch,
+    });
     return mapYouthPageQuery(data as YouthPageQueryResult | null);
   } catch {
     return null;
@@ -660,8 +685,7 @@ export async function getProgramsIndex(): Promise<ProgramCard[]> {
   try {
     const { data } = await sanityFetch({
       query: PROGRAMS_INDEX_QUERY,
-      perspective: "published",
-      stega: false,
+      ...publishedFetch,
     });
     const programs = (data as ProgramCard[] | null) ?? [];
     return programs.filter(
