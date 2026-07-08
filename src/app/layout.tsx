@@ -1,5 +1,6 @@
 import { Fraunces, Inter } from "next/font/google";
 import type { Metadata } from "next";
+import Script from "next/script";
 
 import "./globals.css";
 
@@ -30,6 +31,12 @@ export default function RootLayout({
     <html lang="en" className={`${fraunces.variable} ${inter.variable} h-full scroll-smooth`}>
       <body className="flex min-h-full flex-col bg-paper font-sans text-[17px] leading-[1.62] text-ink antialiased">
         {children}
+        <Script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          strategy="afterInteractive"
+          data-cf-beacon='{"token": "d9d9f83a411643e68e8419a708878d01"}'
+        />
       </body>
     </html>
   );
