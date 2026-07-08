@@ -23,13 +23,13 @@ export default async function Home() {
 
   return (
     <>
-      <section className="py-10 md:py-20">
+      <section className="overflow-x-clip py-10 md:py-20">
         <Wrap>
-          <div className="grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-[clamp(2rem,5vw,4.5rem)]">
-            <div>
+          <div className="grid min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-[1.04fr_0.96fr] lg:gap-[clamp(2rem,5vw,4.5rem)]">
+            <div className="min-w-0">
               <Eyebrow>{settings.tagline ?? "Partner in hope"}</Eyebrow>
               <HeroHeadline text={home.heroHeadline} />
-              <p className="mt-5 max-w-[30ch] text-[1.18rem] text-muted lg:max-w-[30ch]">
+              <p className="mt-5 max-w-none text-[1.18rem] text-muted lg:max-w-[30ch]">
                 {home.heroSubtext}
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
@@ -42,7 +42,9 @@ export default async function Home() {
                 </Button>
               </div>
             </div>
-            <HeroCarousel slides={home.heroSlides} />
+            <div className="order-first min-w-0 w-full lg:order-none">
+              <HeroCarousel slides={home.heroSlides} />
+            </div>
           </div>
         </Wrap>
       </section>
