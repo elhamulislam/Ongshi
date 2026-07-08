@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/get-involved", label: "Get Involved" },
   { href: "/about", label: "About" },
   { href: "/stories", label: "Stories" },
+  { href: "/gallery", label: "Gallery" },
 ];
 
 export function Header({ donateUrl }: { donateUrl: string }) {

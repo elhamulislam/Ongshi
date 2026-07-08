@@ -726,6 +726,68 @@ async function seed() {
 
   await seedPublishedAndDraft(aboutPage);
 
+  console.log("Creating Gallery…");
+
+  const gallery = {
+    _id: "gallery",
+    _type: "gallery",
+    title: "Gallery",
+    intro:
+      "Moments from eye camps, rebuilds, youth drives, and the communities we serve in Bangladesh and Austin.",
+    images: [
+      {
+        _key: key(),
+        ...images.heroGlasses,
+        caption: "Fitting glasses at an eye camp in Bangladesh",
+      },
+      {
+        _key: key(),
+        ...images.eyeCamp,
+        caption: "A clinician examines a patient during an Ongshi eye camp",
+      },
+      {
+        _key: key(),
+        ...images.youth,
+        caption: "Youth volunteers in Austin, Texas",
+      },
+      {
+        _key: key(),
+        ...images.rebuild,
+        caption: "Rebuilding a home after flooding",
+      },
+      {
+        _key: key(),
+        ...images.rebuildRoof,
+        caption: "A new metal roof takes shape",
+      },
+      {
+        _key: key(),
+        ...(await uploadImage(
+          "images/PXL_20250316_190355344.jpg",
+          "Volunteers and families gathered at a community event",
+        )),
+        caption: "Community gathering in the field",
+      },
+      {
+        _key: key(),
+        ...(await uploadImage(
+          "images/PXL_20250316_185413241.jpg",
+          "Ongshi volunteers working together outdoors",
+        )),
+      },
+      {
+        _key: key(),
+        ...(await uploadImage(
+          "images/PXL_20250316_165453849.jpg",
+          "Children smiling during an Ongshi program visit",
+        )),
+        caption: "Children in a village we serve",
+      },
+    ],
+  };
+
+  await seedPublishedAndDraft(gallery);
+
   console.log("Creating team members…");
 
   const teamMembers = [

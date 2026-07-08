@@ -21,8 +21,10 @@ import { siteSettings } from "./siteSettings";
 import { story } from "./story";
 import { teamMember } from "./teamMember";
 import { aboutPage } from "./aboutPage";
+import { gallery } from "./gallery";
 import { getInvolvedPage } from "./getInvolvedPage";
 import { youthPage } from "./youthPage";
+import { galleryImage } from "./objects/galleryImage";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -32,6 +34,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     donation,
     heroSlide,
     imageWithAlt,
+    galleryImage,
     newsletter,
     seo,
     social,
@@ -50,6 +53,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     youthPage,
     getInvolvedPage,
     aboutPage,
+    gallery,
     page,
   ],
 };

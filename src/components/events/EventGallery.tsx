@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Wrap } from "@/components/ui/Wrap";
+import { resolveImageAlt } from "@/lib/imageAlt";
 import type { EventGalleryImage } from "@/lib/sanity/events";
 
 export function EventGallery({ gallery }: { gallery?: EventGalleryImage[] }) {
@@ -29,7 +30,7 @@ export function EventGallery({ gallery }: { gallery?: EventGalleryImage[] }) {
             >
               <Image
                 src={image.imageUrl}
-                alt={image.imageAlt || "Event photo"}
+                alt={resolveImageAlt(image.imageAlt)}
                 fill
                 className="object-cover"
                 sizes={

@@ -12,7 +12,7 @@ export const imageWithAlt = defineType({
       name: "alt",
       title: "Alt text",
       type: "string",
-      validation: (rule) => rule.required(),
+      description: "Optional. Falls back to a generic label on the site when empty.",
     }),
   ],
 });

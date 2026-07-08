@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { ImpactStrip } from "@/components/home/ImpactStrip";
 import { Wrap } from "@/components/ui/Wrap";
+import { resolveImageAlt } from "@/lib/imageAlt";
 import type { ProgramGalleryImage, ProgramImpactStat } from "@/lib/fallbacks/program";
 
 export function ProgramImpact({
@@ -39,7 +40,7 @@ export function ProgramImpact({
                 >
                   <Image
                     src={image.imageUrl}
-                    alt={image.imageAlt}
+                    alt={resolveImageAlt(image.imageAlt)}
                     fill
                     className="object-cover"
                     sizes={

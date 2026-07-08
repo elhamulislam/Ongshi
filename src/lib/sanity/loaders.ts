@@ -10,6 +10,7 @@ import { SITE_SETTINGS_QUERY } from "@/sanity/queries/siteSettings";
 import { STORIES_INDEX_QUERY, STORY_BY_SLUG_QUERY } from "@/sanity/queries/story";
 import { TEAM_MEMBERS_QUERY } from "@/sanity/queries/teamMember";
 import { ABOUT_PAGE_QUERY } from "@/sanity/queries/aboutPage";
+import { GALLERY_QUERY } from "@/sanity/queries/gallery";
 import { CAMPAIGN_BY_SLUG_QUERY, EVENTS_PAST_QUERY, EVENTS_UPCOMING_QUERY } from "@/sanity/queries/campaign";
 import { GET_INVOLVED_PAGE_QUERY } from "@/sanity/queries/getInvolvedPage";
 import { YOUTH_PAGE_QUERY } from "@/sanity/queries/youthPage";
@@ -35,6 +36,7 @@ import { getGeneralDonateUrl } from "@/lib/donation";
 import { resolveHomePageData } from "@/lib/sanity/resolveHomePage";
 import type { StoryCard, StoryData } from "@/lib/sanity/story";
 import type { AboutPageData } from "@/lib/sanity/aboutPage";
+import type { GalleryData } from "@/lib/sanity/gallery";
 import type { EventCard, EventData, EventsIndexData } from "@/lib/sanity/events";
 import type { GetInvolvedPageData } from "@/lib/sanity/getInvolvedPage";
 import type { YouthPageData } from "@/lib/sanity/youthPage";
@@ -414,6 +416,53 @@ export async function getStoryBySlug(slug: string): Promise<StoryData | null> {
   }
 }
 
+type GalleryQueryResult = {
+  title?: string | null;
+  intro?: string | null;
+  images?: Array<{
+    _key?: string | null;
+    alt?: string | null;
+    caption?: string | null;
+    asset?: { _ref: string } | null;
+    hotspot?: unknown;
+    crop?: unknown;
+    width?: number | null;
+    height?: number | null;
+  }> | null;
+  seo?: GalleryData["seo"];
+};
+
+function mapGalleryQuery(gallery: GalleryQueryResult | null): GalleryData | null {
+  if (!gallery) {
+    return null;
+  }
+
+  const images =
+    gallery.images
+      ?.filter(
+        (image) => image._key && image.asset && image.width && image.height,
+      )
+      .map((image) => ({
+        key: image._key!,
+        alt: image.alt,
+        caption: image.caption,
+        source: {
+          asset: image.asset!,
+          hotspot: image.hotspot,
+          crop: image.crop,
+        },
+        width: image.width!,
+        height: image.height!,
+      })) ?? [];
+
+  return {
+    title: gallery.title?.trim() || "Gallery",
+    intro: gallery.intro,
+    images,
+    seo: gallery.seo,
+  };
+}
+
 type AboutPageQueryResult = {
   headline?: string | null;
   intro?: string | null;
@@ -558,6 +607,22 @@ export async function getEventBySlug(slug: string): Promise<EventData | null> {
       ...publishedFetch,
     });
     return mapEventQuery(data as EventQueryResult | null);
+  } catch {
+    return null;
+  }
+}
+
+export async function getGalleryData(): Promise<GalleryData | null> {
+  if (!isSanityConfigured) {
+    return null;
+  }
+
+  try {
+    const { data } = await sanityFetch({
+      query: GALLERY_QUERY,
+      ...publishedFetch,
+    });
+    return mapGalleryQuery(data as GalleryQueryResult | null);
   } catch {
     return null;
   }
