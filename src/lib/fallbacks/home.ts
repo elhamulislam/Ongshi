@@ -3,6 +3,8 @@ import type { DonationConfig } from "@/lib/donation";
 export type SiteSettingsData = {
   orgName?: string | null;
   tagline?: string | null;
+  /** Header logo height in pixels. Falls back to 46 when empty. */
+  logoSize?: number | null;
   contactEmail?: string | null;
   contactPhone?: string | null;
   address?: string | null;

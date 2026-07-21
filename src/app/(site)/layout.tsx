@@ -21,7 +21,7 @@ export default async function SiteLayout({
 
   return (
     <>
-      <Header donateUrl={donateUrl} />
+      <Header donateUrl={donateUrl} logoSize={settings.logoSize} />
       <main className="flex-1">{children}</main>
       <Footer settings={settings} donateUrl={donateUrl} />
       <SanityLive />

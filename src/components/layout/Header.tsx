@@ -17,20 +17,40 @@ const navLinks = [
   { href: "/gallery", label: "Gallery" },
 ];
 
-export function Header({ donateUrl }: { donateUrl: string }) {
+/** Matches the previous hardcoded header logo height. */
+const DEFAULT_LOGO_HEIGHT = 46;
+const LOGO_ASPECT = 160 / 46;
+
+export function Header({
+  donateUrl,
+  logoSize,
+}: {
+  donateUrl: string;
+  logoSize?: number | null;
+}) {
   const [open, setOpen] = useState(false);
+  const logoHeight =
+    typeof logoSize === "number" && logoSize > 0
+      ? logoSize
+      : DEFAULT_LOGO_HEIGHT;
+  const logoWidth = Math.round(logoHeight * LOGO_ASPECT);
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/88 backdrop-blur-[10px]">
       <Wrap>
         <div className="flex h-[78px] items-center justify-between gap-4">
-          <Link href="/" aria-label="Ongshi home">
+          <Link
+            href="/"
+            aria-label="Ongshi home"
+            className="min-w-0 shrink"
+            style={{ ["--logo-h" as string]: `${logoHeight}px` }}
+          >
             <Image
               src="/images/logo.png"
               alt="Ongshi — partner in hope"
-              width={160}
-              height={46}
-              className="h-[46px] w-auto"
+              width={logoWidth}
+              height={logoHeight}
+              className="h-[min(var(--logo-h),2.5rem)] w-auto max-w-full sm:h-[var(--logo-h)]"
               priority
             />
           </Link>
